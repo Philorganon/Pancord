@@ -52,14 +52,11 @@
 ### Quick Start
 
 ```bash
-git clone https://github.com/Philorganon/Discord-Injector.git
+git clone https://github.com/Philorganon/Pancord.git
 cd Discord-Injector
 npm install
 npm start install
 ```
-
-> Setelah di-clone, proyek ini bernama **Pancord** di dalamnya (`package.json` → `pancord`).
-> Nama repo GitHub sengaja masih `Discord-Injector`; semua tautan di dokumen ini menunjuk ke sana.
 
 ---
 
@@ -146,5 +143,3 @@ For support or feature requests, contact on Discord:
 ## License
 
 This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
-
-© 2026 NsnDev
