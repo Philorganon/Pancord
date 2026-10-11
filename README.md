@@ -2,6 +2,7 @@
 <p align="center">
   <img src="./photos/discord.svg" width="64" height="64" alt="Discord">
 </p>
+
 **Client customization kit for Discord Desktop** — themes, colors, and plugins without Nitro and without forking the client.
 
 [![Version](https://img.shields.io/badge/version-2.0.0-blue?style=for-the-badge&logo=github)](https://github.com/Philorganon/Discord-Injector/releases)
@@ -125,19 +126,6 @@ Register in `src/css/themes/index.js`:
 ```javascript
 'my-theme': loadTheme('my-theme'),
 ```
-
----
-
-## Contact
-
-For support or feature requests, contact on Discord:
-
-<a href="https://discord.com/users/1246506845942579311" target="_blank" rel="noopener noreferrer">
-    <img src="./svg/discord-contact.svg" width="20" height="20" style="vertical-align:middle;margin-right:6px;">
-    Discord User ID: 1246506845942579311
-</a>
-
----
 
 ## License
 
