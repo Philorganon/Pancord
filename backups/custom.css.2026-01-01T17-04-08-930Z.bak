@@ -1,6 +1,0 @@
-
-:root { --cyan: #4fc1c2; }
-.theme-dark { --background-primary: #0a0e12; }
-[class*="sidebar"] { background: #0d1117 !important; }
-[class*="message"] { border-left: 3px solid var(--cyan); background: rgba(79, 193, 194, 0.05); }
-    
