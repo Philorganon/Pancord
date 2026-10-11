@@ -1,8 +1,7 @@
 # Pancord
-
-<div align="center">
-<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAzMi44NzIgMzIuODcyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIyIi8+PHBhdGggZD0iTTE3IDE3Yy0xLjQgMC0yLjUtMS4xNS0yLjUtMi41VjguNjI4YzAtMS4zNzIgMS4xNTgtMi41IDIuNS0yLjUgMS40IDIgMi41IDMuNjI4IDMuNzUgNC41LjUgMCAyLjUtMS4xNSAyLjUtMi41VjE3eiIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==" alt="Discord" width="64" height="64">
-
+<p align="center">
+  <img src="./photos/discord.svg" width="64" height="64" alt="Discord">
+</p>
 **Client customization kit for Discord Desktop** — themes, colors, and plugins without Nitro and without forking the client.
 
 [![Version](https://img.shields.io/badge/version-2.0.0-blue?style=for-the-badge&logo=github)](https://github.com/Philorganon/Discord-Injector/releases)
