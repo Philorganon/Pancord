@@ -94,7 +94,7 @@ function convertBDSelectors(css) {
     // Add compatibility note
     const header = `
 /* Imported from BetterDiscord */
-/* Converted by Discord Injector Ultimate */
+/* Converted by Pancord */
 
 `;
     

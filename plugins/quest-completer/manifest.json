@@ -1,0 +1,23 @@
+{
+    "name": "quest-completer",
+    "displayName": "Quest Completer — Otomasi Discord Quest",
+    "version": "1.0.0",
+    "author": "aamiaa (skrip asli, GPL-3.0) — diport ke plugin",
+    "description": "Menjalankan skrip Complete Recent Discord Quest (WATCH_VIDEO, PLAY_ON_DESKTOP, STREAM_ON_DESKTOP, PLAY_ACTIVITY) langsung dari injector, tanpa paste ke DevTools console. Otomasi quest melanggar ToS Discord dan berisiko flag/suspend akun.",
+    "hooks": [
+        "afterInject",
+        "onDiscordStart"
+    ],
+    "config": {
+        "enabled": true,
+        "autoRun": false,
+        "hotkeyStart": "ctrl+shift+q",
+        "hotkeyStop": "ctrl+shift+x",
+        "videoSpeedSeconds": 7,
+        "playActivityHeartbeatMs": 20000,
+        "onlyTasks": [],
+        "dryRun": false,
+        "verbose": true
+    },
+    "dependencies": []
+}

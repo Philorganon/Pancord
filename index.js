@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * @fileoverview Discord CSS Injector Ultimate - CLI Entry Point
+ * @fileoverview Pancord - CLI Entry Point
  * @version 2.0.0
- * @author Discord Injector Team
+ * @author NsnDev
  */
 
 import { Command } from 'commander';
@@ -69,8 +69,8 @@ function showBanner() {
     console.log(chalk.cyan(`
 ╔═══════════════════════════════════════════════════════════════╗
 ║                                                               ║
-║   ${chalk.bold.white('Discord CSS Injector')} ${chalk.gray('v2.0.0')}                    
-║   ${chalk.gray('Professional CSS Theming for Discord')}                        
+║   ${chalk.bold.white('Pancord')} ${chalk.gray('v2.0.0')}                    
+║   ${chalk.gray('Themes, colors, and plugins — no Nitro, no fork')}                     
 ║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
 `));
@@ -149,7 +149,7 @@ async function showMainMenu() {
 
     // Menu box
     console.log(chalk.cyan('┌─────────────────────────────────────────┐'));
-    console.log(chalk.cyan('│') + chalk.bold.white('       Discord Injector - Main Menu      ') + chalk.cyan(''));
+    console.log(chalk.cyan('│') + chalk.bold.white('           Pancord - Main Menu           ') + chalk.cyan(''));
     console.log(chalk.cyan('├─────────────────────────────────────────┤'));
     console.log(chalk.cyan('│') + `  Status: ${statusText}`.padEnd(49) + chalk.cyan(''));
     console.log(chalk.cyan('├─────────────────────────────────────────┤'));
@@ -170,10 +170,10 @@ async function showMainMenu() {
     const { choice } = await inquirer.prompt([{
         type: 'input',
         name: 'choice',
-        message: 'Select option (0-9):',
+        message: 'Select option (0-10):',
         validate: (input) => {
             const num = parseInt(input);
-            if (isNaN(num) || num < 0 || num > 11) {
+            if (isNaN(num) || num < 0 || num > 10) {
                 return 'Please enter a number between 0-10';
             }
             return true;
@@ -282,6 +282,13 @@ async function runInstall() {
     spinner.start('Injecting CSS loader...');
     await injectDiscord(resourcePath, cssContent);
     spinner.succeed(chalk.green('Injection successful!'));
+
+    // Deploy enabled plugins
+    try {
+        await pluginManager.triggerHook('afterInject', { resourcePath, css: cssContent });
+    } catch (e) {
+        logger.error('Failed to trigger plugin afterInject hook', { error: e.message });
+    }
 
     await saveConfig({ ...config, lastInjection: new Date().toISOString(), activeTheme: theme });
 
@@ -736,7 +743,7 @@ async function runBackupManagement() {
         } else {
             for (const b of backups) {
                 console.log(chalk.white(`  [${b.filename}]`));
-                console.log(chalk.gray(`    Size: ${(b.size/1024).toFixed(1)} KB  |  Modified: ${b.date.toLocaleString()}`));
+                console.log(chalk.gray(`    Size: ${(b.size / 1024).toFixed(1)} KB  |  Modified: ${b.date.toLocaleString()}`));
             }
             console.log(chalk.gray(`\nTotal: ${backups.length} backup(s)`));
         }
@@ -752,7 +759,7 @@ async function runBackupManagement() {
             name: 'backupChoice',
             message: 'Choose a backup to restore:',
             choices: backups.map(b => ({
-                name: `${b.filename} (${(b.size/1024).toFixed(1)} KB, ${b.date.toLocaleString()})`,
+                name: `${b.filename} (${(b.size / 1024).toFixed(1)} KB, ${b.date.toLocaleString()})`,
                 value: b.filename
             }))
         }]);
@@ -787,8 +794,8 @@ async function runBackupManagement() {
 // ==================== PROGRAM SETUP ====================
 
 program
-    .name('discord-injector')
-    .description('Discord CSS Injector Ultimate - Professional CSS Theming')
+    .name('pancord')
+    .description('Pancord - Client Customization Kit: CSS theming and plugins for your client')
     .version('2.0.0')
     .hook('preAction', () => showBanner());
 
@@ -866,6 +873,13 @@ program.command('install')
             await injectDiscord(resourcePath, cssContent);
             spinner.succeed(chalk.green('Injection successful!'));
             await logger.success(`Injection completed with theme: ${themeChoice}`);
+
+            // Deploy enabled plugins
+            try {
+                await pluginManager.triggerHook('afterInject', { resourcePath, css: cssContent });
+            } catch (e) {
+                logger.error('Failed to trigger plugin afterInject hook', { error: e.message });
+            }
 
             // Update config
             await saveConfig({
@@ -1076,7 +1090,7 @@ program
                         console.log(chalk.gray(`    Size: ${size}  |  Date: ${date}`));
                     }
 
-                    console.log(chalk.gray(`\nTotal: \${backups.length} backup(s)`));
+                    console.log(chalk.gray(`\nTotal: ${backups.length} backup(s)`));
                 } catch (err) {
                     handleError(err);
                 }
@@ -1500,6 +1514,7 @@ async function main() {
 
         // Initialize plugin manager with API
         await pluginManager.initialize({
+            findDiscordPath,
             getCurrentCSS: async () => {
                 const discordPath = await findDiscordPath();
                 if (discordPath) {
@@ -1519,6 +1534,23 @@ async function main() {
                     const cssPath = path.join(discordPath, 'app', 'custom.css');
                     await fs.writeFile(cssPath, css);
                     return true;
+                }
+                return false;
+            },
+
+            // --- RPC helpers (used by dynamic-status plugin) ---
+            getGlobalConfig: loadConfig,
+            initRPC,
+            setActivity,
+            clearActivity,
+            disconnectRPC,
+            isConnectedRPC: isConnected,
+
+            // --- CSS status helper ---
+            applyStatus: async (presetName, customText) => {
+                const discordPath = await findDiscordPath();
+                if (discordPath) {
+                    return await applyStatus(discordPath, presetName, customText);
                 }
                 return false;
             }

@@ -1,0 +1,20 @@
+{
+    "name": "pending-friend-tracker",
+    "displayName": "Pending Friend Tracker — Durasi Pending Pertemanan",
+    "version": "1.0.0",
+    "author": "NsnDev",
+    "description": "Menampilkan durasi berapa lama seseorang berada di daftar pending add friend (Incoming & Outgoing), badge langsung di list Discord, dan panel tracker interaktif.",
+    "hooks": [
+        "afterInject",
+        "onDiscordStart"
+    ],
+    "config": {
+        "enabled": true,
+        "hotkey": "ctrl+shift+p",
+        "showBadgeInFriendsList": true,
+        "showFloatingButton": true,
+        "alertThresholdDays": 7,
+        "autoRefreshIntervalSec": 15
+    },
+    "dependencies": []
+}

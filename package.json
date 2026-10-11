@@ -1,10 +1,11 @@
 {
-  "name": "discord-injector-ultimate",
+  "name": "pancord",
   "version": "2.0.0",
-  "description": "Professional Discord CSS Injector with Plugin System",
+  "description": "Client customization kit: full CSS theming without Nitro, plus a plugin system for extending your client.",
   "main": "index.js",
   "type": "module",
   "bin": {
+    "pancord": "./index.js",
     "discord-injector": "./index.js"
   },
   "scripts": {
@@ -18,14 +19,23 @@
   },
   "keywords": [
     "discord",
+    "client-mod",
     "css",
-    "injector",
-    "theme",
+    "themes",
+    "plugins",
     "customization",
     "betterdiscord"
   ],
-  "author": "Discord Injector Team",
+  "author": "NsnDev",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Philorganon/Discord-Injector.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Philorganon/Discord-Injector/issues"
+  },
+  "homepage": "https://github.com/Philorganon/Discord-Injector#readme",
   "engines": {
     "node": ">=18.0.0"
   },

@@ -1,0 +1,28 @@
+{
+    "name": "quick-send",
+    "displayName": "Quick Send — Stiker & Template",
+    "version": "1.0.0",
+    "author": "NsnDev",
+    "description": "Popup UI di Discord untuk kirim gambar custom (stiker tanpa Nitro) dan kalimat template dengan cepat",
+    "hooks": [
+        "afterInject",
+        "onDiscordStart"
+    ],
+    "config": {
+        "enabled": true,
+        "hotkey": "ctrl+shift+q",
+        "sendTemplateDirectly": false,
+        "stickerSize": 80,
+        "maxColumns": 5,
+        "templates": [
+            { "text": "malas", "category": "busy" },
+            { "text": "afk sek", "category": "afk" },
+            { "text": "Oke dah", "category": "confirm" },
+            { "text": "Sabar woi", "category": "busy" },
+            { "text": "mangan dulu sek", "category": "afk" },
+            { "text": "Udah nih", "category": "done" },
+            { "text": "Cek dm lu", "category": "info" }
+        ]
+    },
+    "dependencies": []
+}

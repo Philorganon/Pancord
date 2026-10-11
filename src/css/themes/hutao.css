@@ -506,10 +506,23 @@ div[class*="header__8ef02"] [class*="icon__0f084"] svg {
 
 /* === 17. TEXTAREA INPUT CHAT === */
 [class*="scrollableContainer__74017"] {
-    background-color: #2A2220 !important;
+    /* Mengganti background warna solid menjadi foto Hu Tao + overlay gelap tipis */
+    background-image: linear-gradient(rgba(15, 15, 20, 0.4), rgba(15, 15, 20, 0.4)), 
+                      url('https://cdn.discordapp.com/attachments/1478946854703075479/1512015814277070960/Hutao_Genshin_Impact.png?ex=6a228df6&is=6a213c76&hm=10e306b9d3cbc72a9fabd6859e48fdd5d9be30851e71ef8ca3eb0dbacb7c379b') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    
+    /* Mempertahankan style border dan shadow asli milikmu */
     border: 2px solid #0D0A08 !important;
     box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.4) !important;
     border-radius: 8px !important;
+}
+
+/* Memastikan teks yang kamu ketik di dalam chatbox berwarna putih bersih agar kontras */
+[class*="scrollableContainer__74017"] textarea {
+    color: #ffffff !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8) !important;
 }
 
 /* === 18. SCROLLBAR === */

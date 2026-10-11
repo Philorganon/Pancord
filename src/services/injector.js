@@ -57,7 +57,7 @@ let injectionState = {
 function getInjectionScript() {
     return `
 /**
- * Discord CSS Injector - Loader Script
+ * Pancord - Loader Script
  * This file is auto-generated. Do not modify.
  */
 const electron = require('electron');
@@ -80,7 +80,7 @@ function getSettings() {
             return JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
         }
     } catch (err) {
-        console.error('[Discord Injector] Error reading settings:', err);
+        console.error('[Pancord] Error reading settings:', err);
     }
     return {};
 }
@@ -91,22 +91,20 @@ function getSettings() {
 function applyNotificationSound(window, soundUrl) {
     if (!soundUrl) return;
     
-    window.webContents.executeJavaScript(`
-        (function () {
-            if (window._soundHooked) return;
-            window._soundHooked = true;
-
-            const originalPlay = Audio.prototype.play;
-            Audio.prototype.play = function () {
-                if (this.src && (this.src.includes('notification') || this.src.includes('message'))) {
-                    this.src = '${soundUrl}';
-                }
-                return originalPlay.apply(this, arguments);
-            };
-            console.log('[Discord Injector] Notification sound hook applied: ${soundUrl}');
-        })();
-    `).catch(err => {
-        console.error('[Discord Injector] Error applying sound hook:', err);
+    window.webContents.executeJavaScript(
+        '(function () {' +
+        '    if (window._soundHooked) return;' +
+        '    window._soundHooked = true;' +
+        '    const originalPlay = Audio.prototype.play;' +
+        '    Audio.prototype.play = function () {' +
+        '        if (this.src && (this.src.includes("notification") || this.src.includes("message"))) {' +
+        '            this.src = "' + soundUrl + '";' +
+        '        }' +
+        '        return originalPlay.apply(this, arguments);' +
+        '    };' +
+        '})()'
+    ).catch(err => {
+        console.error('[Pancord] Error applying sound hook:', err);
     });
 }
 
@@ -122,10 +120,33 @@ function loadResources(window) {
             const css = fs.readFileSync(cssPath, 'utf8');
             window.webContents.insertCSS(css).then(key => {
                 window._cssKey = key;
-                console.log('[Discord Injector] CSS loaded successfully');
+                console.log('[Pancord] CSS loaded successfully');
             }).catch(err => {
-                console.error('[Discord Injector] CSS insert error:', err);
+                console.error('[Pancord] CSS insert error:', err);
             });
+        }
+        
+        // Load plugin scripts from plugin-scripts folder
+        const pluginScriptsDir = path.join(__dirname, 'plugin-scripts');
+        if (fs.existsSync(pluginScriptsDir)) {
+            try {
+                const files = fs.readdirSync(pluginScriptsDir);
+                for (const file of files) {
+                    if (file.endsWith('.js')) {
+                        const filePath = path.join(pluginScriptsDir, file);
+                        try {
+                            const code = fs.readFileSync(filePath, 'utf8');
+                            window.webContents.executeJavaScript(code).catch(err => {
+                                console.error('[Pancord] Error executing plugin script ' + file + ':', err);
+                            });
+                        } catch (err) {
+                            console.error('[Pancord] Error reading plugin script ' + file + ':', err);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('[Pancord] Error reading plugin-scripts directory:', err);
+            }
         }
         
         // Apply Sound
@@ -134,7 +155,7 @@ function loadResources(window) {
             applyNotificationSound(window, settings.notificationSound);
         }
     } catch (error) {
-        console.error('[Discord Injector] Error loading resources:', error);
+        console.error('[Pancord] Error loading resources:', error);
     }
 }
 
@@ -153,7 +174,7 @@ function reloadResources(window) {
         // Load new resources
         loadResources(window);
     } catch (error) {
-        console.error('[Discord Injector] Error reloading resources:', error);
+        console.error('[Pancord] Error reloading resources:', error);
     }
 }
 
@@ -164,6 +185,12 @@ electron.app.on('browser-window-created', (_, window) => {
     window.webContents.on('dom-ready', () => {
         loadResources(window);
     });
+    window.webContents.on('did-finish-load', () => {
+        loadResources(window);
+    });
+    window.webContents.on('did-navigate-in-page', () => {
+        loadResources(window);
+    });
     
     window.on('closed', () => {
         windows.delete(window);
@@ -172,12 +199,12 @@ electron.app.on('browser-window-created', (_, window) => {
 
 // Watch for file changes
 fs.watchFile(cssPath, { interval: 500 }, () => {
-    console.log('[Discord Injector] CSS changed, reloading...');
+    console.log('[Pancord] CSS changed, reloading...');
     for (const window of windows) reloadResources(window);
 });
 
 fs.watchFile(settingsPath, { interval: 500 }, () => {
-    console.log('[Discord Injector] Settings changed, reloading...');
+    console.log('[Pancord] Settings changed, reloading...');
     for (const window of windows) reloadResources(window);
 });
 
@@ -185,7 +212,7 @@ fs.watchFile(settingsPath, { interval: 500 }, () => {
 electron.app.on('will-quit', () => {
     fs.unwatchFile(cssPath);
     fs.unwatchFile(settingsPath);
-    console.log('[Discord Injector] Cleanup complete');
+    console.log('[Pancord] Cleanup complete');
 });
 
 // Load original Discord
@@ -194,8 +221,8 @@ const originalAsar = path.join(process.resourcesPath, '${FILE_NAMES.ORIGINAL_ASA
 if (fs.existsSync(originalAsar)) {
     require(originalAsar);
 } else {
-    console.error('[Discord Injector] FATAL: original.asar not found!');
-    electron.dialog.showErrorBox('Discord Injector Error', 
+    console.error('[Pancord] FATAL: original.asar not found!');
+    electron.dialog.showErrorBox('Pancord Error', 
         'original.asar not found! Please restore Discord and try again.');
 }
 
@@ -208,7 +235,7 @@ if (fs.existsSync(originalAsar)) {
  */
 function getPackageJson() {
     return {
-        name: 'discord-injector',
+        name: 'pancord',
         main: 'index.js',
         version: '1.0.0'
     };

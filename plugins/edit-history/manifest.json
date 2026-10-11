@@ -1,0 +1,25 @@
+{
+    "name": "edit-history",
+    "displayName": "Edit History — Riwayat Edit Pesan",
+    "version": "1.0.0",
+    "author": "NsnDev",
+    "description": "Mencatat versi lama setiap kali pesan diedit, menandai pesan dengan badge jumlah edit, dan menampilkan panel riwayat (Alt+klik atau Ctrl+Shift+E). Data disimpan lokal di localStorage dan tidak dikirim ke mana pun.",
+    "hooks": [
+        "afterInject",
+        "onDiscordStart"
+    ],
+    "config": {
+        "enabled": true,
+        "persist": true,
+        "maxVersions": 10,
+        "maxMessages": 500,
+        "maxContentChars": 2000,
+        "showBadge": true,
+        "hotkeyShowLast": "ctrl+shift+e",
+        "logEdits": false,
+        "panelMaxHeightPx": 420,
+        "saveDebounceMs": 1500,
+        "guardIntervalMs": 3000
+    },
+    "dependencies": []
+}

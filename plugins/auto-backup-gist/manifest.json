@@ -2,7 +2,7 @@
     "name": "auto-backup-gist",
     "displayName": "Auto Backup to GitHub Gist",
     "version": "1.0.0",
-    "author": "Discord Injector",
+    "author": "NsnDev",
     "description": "Automatically backup your CSS to a GitHub Gist",
     "hooks": [
         "afterInject",

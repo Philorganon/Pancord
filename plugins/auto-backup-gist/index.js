@@ -93,7 +93,7 @@ export default class AutoBackupGist {
                     content: JSON.stringify({
                         lastBackup: new Date().toISOString(),
                         version: '1.0.0',
-                        source: 'Discord CSS Injector'
+                        source: 'Pancord'
                     }, null, 2)
                 }
             }

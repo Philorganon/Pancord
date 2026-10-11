@@ -1,0 +1,17 @@
+{
+    "name": "dynamic-status",
+    "displayName": "Dynamic Status Changer",
+    "version": "1.0.0",
+    "author": "NsnDev",
+    "description": "Automatically changes Discord status (e.g., Sleeping for X minutes) every minute",
+    "hooks": [
+        "onDiscordStart"
+    ],
+    "config": {
+        "enabled": true,
+        "type": "rpc",
+        "prefix": "sleeping for",
+        "clientId": "1520493871212265652"
+    },
+    "dependencies": []
+}

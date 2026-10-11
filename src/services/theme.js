@@ -310,7 +310,7 @@ function convertBDSelectors(css) {
     converted = converted.replace(/\.bd-/g, '.discord-');
 
     // Add compatibility header
-    const header = `/* Imported from BetterDiscord - Converted by Discord Injector */\n\n`;
+    const header = `/* Imported from BetterDiscord - Converted by Pancord */\n\n`;
 
     return header + converted;
 }

@@ -1,261 +1,150 @@
+# Pancord
+
 <div align="center">
+<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAzMi44NzIgMzIuODcyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIyIi8+PHBhdGggZD0iTTE3IDE3Yy0xLjQgMC0yLjUtMS4xNS0yLjUtMi41VjguNjI4YzAtMS4zNzIgMS4xNTgtMi41IDIuNS0yLjUgMS40IDIgMi41IDMuNjI4IDMuNzUgNC41LjUgMCAyLjUtMS4xNSAyLjUtMi41VjE3eiIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==" alt="Discord" width="64" height="64">
 
-#  Discord CSS Injector
+**Client customization kit for Discord Desktop** — themes, colors, and plugins without Nitro and without forking the client.
 
-**Professional Discord theming with live editing, 13 built-in themes, and a Monaco-based editor.**
+[![Version](https://img.shields.io/badge/version-2.0.0-blue?style=for-the-badge&logo=github)](https://github.com/Philorganon/Discord-Injector/releases)
+[![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-green?style=for-the-badge&logo=node.js)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/license-MIT-purple?style=for-the-badge)](LICENSE)
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/Philorganon/Discord-Injector/releases)
-[![Node](https://img.shields.io/badge/node-%3E%3D16.0.0-green.svg)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE)
-
+[Features](#features) • [Installation](#installation) • [Usage](#usage) • [Themes](#themes) • [Contact](#contact)
 </div>
 
 ---
 
-> [!WARNING]
-> Modifying the Discord client **may violate Discord's Terms of Service**. Use at your own risk.
-> You may be automatically logged out — make sure to save your login credentials beforehand.
+## Features
+
+| Feature | Description |
+|---------|-------------|
+| <img src="./svg/injection.svg" width="16" height="16" style="vertical-align:middle;"> **Custom CSS Injection** | Apply any CSS to Discord |
+| <img src="./svg/editor.svg" width="16" height="16" style="vertical-align:middle;"> **Live CSS Editor** | Monaco-based editor with syntax highlighting |
+| <img src="./svg/theme.svg" width="16" height="16" style="vertical-align:middle;"> **Theme System** | 12 built-in themes plus custom themes |
+| <img src="./svg/plugin.svg" width="16" height="16" style="vertical-align:middle;"> **Plugin System** | Extend functionality via plugins |
+| <img src="./svg/backup.svg" width="16" height="16" style="vertical-align:middle;"> **Auto Backup** | Automatic backups before modifications |
+| <img src="./svg/restore.svg" width="16" height="16" style="vertical-align:middle;"> **Safe Restore** | One-command restoration to original state |
+| <img src="./svg/hot-reload.svg" width="16" height="16" style="vertical-align:middle;"> **Hot Reload** | Changes apply instantly without restart |
+
+### Security & Reliability
+
+- **Input Validation** - All inputs are sanitized
+- **Atomic Operations** - All-or-nothing file operations
+- **Rollback Support** - Automatic rollback on failures
+- **Checksum Verification** - File integrity checks
+- **Comprehensive Logging** - Full activity logging
+
+### Multi-Platform Support
+
+- Windows 10/11
+- macOS (Intel & Apple Silicon)
+- Linux (Debian, Ubuntu, Arch, etc.)
 
 ---
 
-##  Features
-
-- **13 Premium Themes** — From Dark Purple to Cyberpunk Neon
-- **Live CSS Editor** — Real-time editing powered by Monaco Editor
-- **Hot Reload** — Changes apply instantly without restarting Discord
-- **Auto-save** — CSS changes are saved automatically as you type
-- **Safe Injection** — Original Discord files are always backed up
-- **Full Logging** — Complete activity logs with 7-day auto-cleanup
-- **Easy Restore** — Revert everything with a single command
-
----
-
-##  Installation
+## Installation
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) `>= 16.0.0`
-- Discord desktop application
+- [Node.js](https://nodejs.org/) v18.0.0 or higher
+- Discord Desktop App
 
 ### Quick Start
 
 ```bash
-# Clone the repository
 git clone https://github.com/Philorganon/Discord-Injector.git
 cd Discord-Injector
-
-# Install dependencies
 npm install
-
-# Run the injector
 npm start install
 ```
 
-Choose your theme and let it run!
+> Setelah di-clone, proyek ini bernama **Pancord** di dalamnya (`package.json` → `pancord`).
+> Nama repo GitHub sengaja masih `Discord-Injector`; semua tautan di dokumen ini menunjuk ke sana.
 
 ---
 
-##  Available Themes
+## Usage
 
-| Theme | Style | Colors |
-|-------|-------|--------|
-| `test` | Debug | Purple / Pink |
-| `midnight` | Pure Black | `#000000` |
-| `cyan` | Cyberpunk | Cyan / Blue |
-| `dark-purple` | Premium | Purple Gradient |
-| `ocean-blue` | Deep Sea | Ocean Blue |
-| `forest-green` | Nature | Forest Green |
-| `sunset-orange` | Warm | Orange / Pink |
-| `rose-pink` | Soft Elegant | Pink |
-| `monochrome` | Professional | Black / White |
-| `cyberpunk-neon` | Futuristic | Neon Pink / Cyan |
-| `nord` | Arctic | Nordic Colors |
-| `dracula` | Iconic | Purple / Pink |
-| `gruvbox` | Retro | Warm Orange |
+### Commands
+
+```bash
+npm start install     # Install/inject with theme selection
+npm start editor      # Open live CSS editor
+npm start status      # Check injection status
+npm start themes      # List available themes
+npm start plugins     # Manage plugins
+npm start config      # View/edit configuration
+npm start test        # Run diagnostic tests
+npm start restore     # Restore original Discord
+```
+
+### Command Options
+
+```bash
+npm start install -- -t dark-purple    # Install with specific theme
+npm start editor -- -p 9000             # Open editor on custom port
+npm start restore -- -f                # Force restore without confirmation
+```
 
 ---
 
-##  Usage
+## Themes
 
-### Inject a CSS Theme
+| Theme | Description | Style |
+|-------|-----------|-------|
+| `midnight` | Pure black theme | Utility |
+| `cyan` | Cyberpunk cyan | Modern |
+| `dark-purple` | Dark with purple gradient | Professional |
+| `ocean-blue` | Deep ocean tones | Calming |
+| `forest-green` | Nature-inspired green | Organic |
+| `sunset-orange` | Warm orange pink | Warm |
+| `rose-pink` | Soft elegant pink | Elegant |
+| `monochrome` | Black and white | Minimal |
+| `cyberpunk-neon` | Futuristic neon | Futuristic |
+| `nord` | Arctic Nordic palette | Arctic |
+| `dracula` | Classic dark purple | Iconic |
+| `gruvbox` | Retro warm orange | Retro |
+| `nsn` | Custom variant | Unique |
+| `hutao` | Special themed | Themed |
 
-```bash
-npm start install
-```
+### Create Custom Theme
 
-The process will automatically detect Discord, let you choose a theme, close Discord, inject the CSS loader, and optionally reopen Discord.
-
-### Open the Live CSS Editor
-
-```bash
-npm start editor
-```
-
-Opens a Monaco-based editor in your browser. Edit CSS in real-time and save with **Ctrl+S** to see changes instantly.
-
-### Restore Original Discord
-
-```bash
-npm start restore
-```
-
-Removes all injections and fully restores the original Discord client.
-
-### Test the Installation
-
-```bash
-npm start test
-```
-
-Verifies the Discord installation path, configuration, and current injection status.
-
----
-
-##  How It Works
-
-The injector:
-
-1. **Backs up** `app.asar` → `original.asar`
-2. **Creates** an `app/` directory with a minimal `package.json`
-3. **Adds** an `index.js` that loads the original app and injects `custom.css`
-4. **Watches** for CSS file changes and triggers a live reload
-
-### Safety Features
-
-- Automatic backups before any modification
-- Original `app.asar` is always preserved
-- Window destruction checks to prevent crashes
-- Clean shutdown on Discord close
-- One-command full restore
-
----
-
-##  Creating Custom Themes
-
-### Method 1 — Live Editor (Recommended)
-
-```bash
-npm start editor
-```
-
-Edit CSS directly in the browser editor and save with **Ctrl+S**.
-
-### Method 2 — Add a Theme File
-
-1. Create `src/css/themes/my-theme.css`
-2. Write your CSS
-3. Register it in `src/css/themes/index.js`:
-
-```javascript
-export const themes = {
-    // ... existing themes
-    'my-theme': loadTheme('my-theme'),
-};
-```
-
-### Example CSS Structure
+Create `src/css/themes/my-theme.css`:
 
 ```css
+/**
+ * @name My Custom Theme
+ * @author Your Name
+ * @version 1.0.0
+ */
+
 :root {
-    --background-primary: #000000 !important;
-    --background-secondary: #0a0a0a !important;
+    --background-primary: #1a1a2e;
+    --text-normal: #eaeaea;
 }
+```
 
-.theme-dark {
-    --background-primary: #000 !important;
-}
+Register in `src/css/themes/index.js`:
 
-[class*="sidebar"] {
-    background: #000000 !important;
-}
-
-[class*="message"] {
-    border-left: 3px solid #7289da !important;
-}
+```javascript
+'my-theme': loadTheme('my-theme'),
 ```
 
 ---
 
-##  Project Structure
+## Contact
 
-```
-discord-injector/
-├── index.js               # CLI entry point
-├── package.json           # Dependencies & scripts
-├── config.json            # Configuration file
-├── src/
-│   ├── finder.js          # Discord path detection
-│   ├── process.js         # Process management
-│   ├── backup.js          # Backup system
-│   ├── injector.js        # Core injection logic
-│   ├── websocket.js       # Live editor server
-│   ├── logger.js          # Logging system
-│   ├── config.js          # Config management
-│   ├── css/
-│   │   ├── base.css       # Base CSS template
-│   │   └── themes/
-│   │       ├── index.js
-│   │       ├── test.css
-│   │       ├── midnight.css
-│   │       └── ...        # Other themes
-│   └── editor/
-│       ├── index.html
-│       ├── styles.css
-│       └── editor.js
-├── logs/                  # Auto-generated logs (7-day retention)
-└── backups/               # Auto-generated backups
-```
+For support or feature requests, contact on Discord:
+
+<a href="https://discord.com/users/1246506845942579311" target="_blank" rel="noopener noreferrer">
+    <img src="./svg/discord-contact.svg" width="20" height="20" style="vertical-align:middle;margin-right:6px;">
+    Discord User ID: 1246506845942579311
+</a>
 
 ---
 
-##  Troubleshooting
+## License
 
-| Problem | Solution |
-|---------|----------|
-| **CSS not applying** | Ensure Discord is fully closed → check DevTools console for `[Discord Injector]` logs → try the `test` theme |
-| **Injection failed** | Close Discord → run as Administrator → inspect `logs/` → try `npm start restore` first |
-| **Editor not loading** | Verify port `8765` is free → check browser console → run `npm start test` |
-| **Restore issues** | Run as Administrator → manually delete `resources/app/` and rename `resources/original.asar` back to `app.asar` |
+This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
 
-> **Note:** Discord updates can break the injection. Simply run `npm start restore`, then re-inject.
-
----
-
-##  Logs
-
-All activity is recorded in `logs/` — including injections, errors, and file changes. Logs are automatically cleaned up after **7 days**.
-
----
-
-##  Contributing
-
-Contributions are welcome! You can:
-
-- Add new themes
-- Improve stability
-- Add new features
-- Fix bugs
-
-Please submit a pull request with a clear description of your changes.
-
----
-
-##  License
-
-This project is licensed under the **MIT License**. See the [`LICENSE`](LICENSE) file for details.
-
----
-
-##  Credits
-
-- [Monaco Editor](https://microsoft.github.io/monaco-editor/) — Microsoft
-- [Commander.js](https://github.com/tj/commander.js/) — TJ Holowaychuk
-- [Chalk](https://github.com/chalk/chalk) — Sindre Sorhus
-
----
-
-<div align="center">
-
-If you find this project useful, please ⭐ **star the repository**!
-
-</div>
+© 2026 NsnDev

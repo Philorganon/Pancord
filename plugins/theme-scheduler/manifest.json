@@ -2,13 +2,13 @@
     "name": "theme-scheduler",
     "displayName": "Theme Scheduler",
     "version": "1.0.0",
-    "author": "Discord Injector",
+    "author": "NsnDev",
     "description": "Automatically switch themes based on time of day",
     "hooks": [
         "onDiscordStart"
     ],
     "config": {
-        "enabled": true,
+        "enabled": false,
         "schedules": [
             {
                 "theme": "dark-purple",

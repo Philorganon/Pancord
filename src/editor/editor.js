@@ -290,8 +290,8 @@
                 if (ws && ws.readyState === WebSocket.OPEN) {
                     ws.send(JSON.stringify({ type: 'SAVE', css }));
                     console.log('%c📤 CSS sent via WebSocket', 'color: #7289da;');
-                showToast('CSS saved successfully!', 'success');
-            } else {
+                    showToast('CSS saved successfully!', 'success');
+                } else {
                     // Fallback: try HTTP POST
                     fetch('/api/css', {
                             method: 'POST',
@@ -339,6 +339,6 @@
                 if (saveTimeout) clearTimeout(saveTimeout);
             });
 
-console.log('%c🚀 Discord CSS Injector Pro ready', 'color: #7289da; font-weight: bold;');
+console.log('%c🚀 Pancord ready', 'color: #7289da; font-weight: bold;');
 console.log('%c   WebSocket: ws://localhost:8765', 'color: #9aa0a6;');
 console.log('%c   Editor: Monaco 0.34.1', 'color: #9aa0a6;');

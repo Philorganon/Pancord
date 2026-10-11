@@ -1,0 +1,20 @@
+{
+    "name": "live-bridge",
+    "displayName": "Live Bridge — Debug Discord dari Terminal",
+    "version": "1.0.0",
+    "author": "NsnDev",
+    "description": "Jembatan HTTP long-poll antara injector dan renderer Discord: log renderer tampil di terminal, jalankan kode di Discord lewat CLI, dan reload renderer tanpa restart aplikasi. Memakai HTTP karena CSP Discord memblokir ws://localhost.",
+    "hooks": [
+        "afterInject",
+        "onDiscordStart"
+    ],
+    "config": {
+        "enabled": true,
+        "port": 8788,
+        "token": "dsh-live-bridge",
+        "pollHoldMs": 20000,
+        "mirrorRendererLog": true,
+        "commandTimeoutMs": 30000
+    },
+    "dependencies": []
+}

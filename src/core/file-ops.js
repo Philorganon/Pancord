@@ -121,11 +121,12 @@ export async function atomicWrite(filePath, content, options = {}) {
     } = options;
 
     const targetPath = validatePath(filePath);
-    const tempPath = path.join(TEMP_DIR, `${crypto.randomUUID()}.tmp`);
+    const targetDir = path.dirname(targetPath);
+    const tempPath = path.join(targetDir, `.${crypto.randomUUID()}.tmp`);
     let backupInfo = null;
 
     try {
-        await fs.ensureDir(TEMP_DIR);
+        await fs.ensureDir(targetDir);
 
         // Create backup if requested and file exists
         if (backup && await fs.pathExists(targetPath)) {
@@ -139,10 +140,18 @@ export async function atomicWrite(filePath, content, options = {}) {
         const tempChecksum = await getChecksum(tempPath);
 
         // Ensure target directory exists
-        await fs.ensureDir(path.dirname(targetPath));
+        await fs.ensureDir(targetDir);
 
-        // Atomic rename
-        await fs.rename(tempPath, targetPath);
+        // Atomic move/rename (supports cross-device fallback)
+        try {
+            await fs.rename(tempPath, targetPath);
+        } catch (renameErr) {
+            if (renameErr.code === 'EXDEV') {
+                await fs.move(tempPath, targetPath, { overwrite: true });
+            } else {
+                throw renameErr;
+            }
+        }
 
         // Verify final file
         const finalChecksum = await getChecksum(targetPath);

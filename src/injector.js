@@ -77,7 +77,7 @@ export async function injectDiscord(resourcePath, initialCSS) {
 
     await fs.ensureDir(appFolder);
     await fs.writeFile(path.join(appFolder, 'custom.css'), initialCSS);
-    await fs.writeJson(path.join(appFolder, 'package.json'), { name: "discord-injector", main: "index.js" });
+    await fs.writeJson(path.join(appFolder, 'package.json'), { name: "pancord", main: "index.js" });
 
     const scriptContent = `
 const { app } = require('electron');
@@ -97,6 +97,29 @@ const applyResources = (window) => {
 
     if (fs.existsSync(cssPath)) {
         window.webContents.insertCSS(fs.readFileSync(cssPath, 'utf8')).catch(e => {});
+    }
+
+    // Load plugin scripts from plugin-scripts folder
+    const pluginScriptsDir = path.join(__dirname, 'plugin-scripts');
+    if (fs.existsSync(pluginScriptsDir)) {
+        try {
+            const files = fs.readdirSync(pluginScriptsDir);
+            for (const file of files) {
+                if (file.endsWith('.js')) {
+                    const filePath = path.join(pluginScriptsDir, file);
+                    try {
+                        const code = fs.readFileSync(filePath, 'utf8');
+                        window.webContents.executeJavaScript(code).catch(e => {
+                            console.error('[Injector] Error executing plugin script ' + file + ':', e);
+                        });
+                    } catch (e) {
+                        console.error('[Injector] Error reading plugin script ' + file + ':', e);
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('[Injector] Error reading plugin-scripts directory:', e);
+        }
     }
 
     const soundUrl = settings.notificationSound;
@@ -132,6 +155,28 @@ const applyResources = (window) => {
             };
         })();\`;
         window.webContents.executeJavaScript(code).catch(e => {});
+    }
+
+    // Bridge Discord auth token for plugins
+    try {
+        const apiFilter = { urls: ["*://*.discord.com/api/*", "*://discord.com/api/*"] };
+        window.webContents.session.webRequest.onBeforeSendHeaders(apiFilter, (details, callback) => {
+            const auth = details.requestHeaders['Authorization'] || details.requestHeaders['authorization'];
+            if (auth && typeof auth === 'string' && auth.length > 20 && !auth.startsWith('Bot ')) {
+                global.__DISCORD_USER_TOKEN__ = auth;
+                window.webContents.executeJavaScript(\`
+                    window.__DISCORD_USER_TOKEN__ = \${JSON.stringify(auth)};
+                    if (typeof window.__pft_onTokenCaptured === 'function') {
+                        window.__pft_onTokenCaptured(\${JSON.stringify(auth)});
+                    }
+                \`).catch(() => {});
+            }
+            callback({ requestHeaders: details.requestHeaders });
+        });
+    } catch (e) {}
+
+    if (global.__DISCORD_USER_TOKEN__) {
+        window.webContents.executeJavaScript(\`window.__DISCORD_USER_TOKEN__ = \${JSON.stringify(global.__DISCORD_USER_TOKEN__)};\`).catch(() => {});
     }
 };
 

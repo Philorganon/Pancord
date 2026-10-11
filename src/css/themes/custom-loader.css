@@ -1,141 +1,87 @@
 /**
- * @name Custom Loading Screen
- * @description Beautiful loading screen for Discord
- * @version 1.0.0
+ * @name NsnDev Minimal White Splash
+ * @description Clean white loading screen with Blue Logo & Red Text (Force Override)
+ * @author NsnDev
+ * @version 2.2.0
  */
 
-/* ===== MAIN LOADING SCREEN ===== */
+/* ===== 1. BACKGROUND (PUTIH BERSIH) ===== */
 [class*="splashScreen"],
 [class*="splash"] {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    animation: gradientShift 5s ease infinite !important;
+    background: radial-gradient(circle at center, #ffffff 0%, #f0f2f5 100%) !important;
+    animation: none !important; 
 }
 
-@keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+/* ===== 2. SEMBUNYIKAN TEKS BAWAAN (MINIM TEXT) ===== */
+[class*="splashScreen"] [class*="tips"],
+[class*="splashScreen"] [class*="loadingText"],
+[class*="splashScreen"] [class*="quote"],
+[class*="splash"] [class*="text"],
+[class*="splashScreen"]::before {
+    display: none !important;
 }
 
-/* ===== LOADING TEXT ===== */
-[class*="splashScreen"] [class*="text"],
-[class*="splash"] [class*="loadingText"] {
-    color: #ffffff !important;
-    font-size: 24px !important;
-    font-weight: 600 !important;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.3) !important;
-}
-
-/* Change loading text */
+/* ===== 3. BRANDING NSNDEV (MERAH GELAP & NYALA) ===== */
 [class*="splashScreen"]::after,
 [class*="splash"]::after {
-    content: "Loading Your Custom Discord... ✨" !important;
+    content: "NSNDEV" !important;
     position: absolute !important;
-    bottom: 100px !important;
+    bottom: 50px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
-    color: rgba(255,255,255,0.9) !important;
-    font-size: 18px !important;
-    font-weight: 500 !important;
-    animation: fadeInOut 2s ease-in-out infinite !important;
+    
+    /* Paksaan warna merah ditaruh di sini */
+    color: #d32f2f !important; /* Merah Crimson */
+    -webkit-text-fill-color: #d32f2f !important; /* Trik agar teks tidak tertimpa warna putih bawaan */
+    text-shadow: 0 2px 8px rgba(211, 47, 47, 0.4) !important;
+    
+    font-family: 'Inter', -apple-system, sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    letter-spacing: 8px !important; 
+    
+    animation: breatheText 2.5s ease-in-out infinite !important;
 }
 
-@keyframes fadeInOut {
+@keyframes breatheText {
     0%, 100% { opacity: 0.5; }
     50% { opacity: 1; }
 }
 
-/* ===== DISCORD LOGO ON LOADING ===== */
+/* ===== 4. LOGO DISCORD DI TENGAH (PAKSA BIRU) ===== */
+/* Menargetkan baik tag svg maupun img agar tidak ada celah */
 [class*="splashScreen"] svg,
-[class*="splash"] svg {
-    filter: drop-shadow(0 0 20px rgba(255,255,255,0.3)) !important;
-    animation: pulse 2s ease-in-out infinite !important;
+[class*="splash"] svg,
+[class*="splashScreen"] img,
+[class*="splash"] img {
+    width: 75px !important; 
+    
+    /* MANTRA SAKTI: Ubah paksa gambar/logo putih menjadi Biru (#2563eb) */
+    filter: brightness(0) invert(28%) sepia(58%) saturate(3404%) hue-rotate(211deg) brightness(96%) contrast(98%) drop-shadow(0 4px 12px rgba(37, 99, 235, 0.3)) !important;
+    
+    animation: smoothPulse 3s ease-in-out infinite !important;
 }
 
-@keyframes pulse {
+@keyframes smoothPulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
 }
 
-/* ===== LOADING BAR ===== */
+/* ===== 5. LOADING BAR (BIRU SENADA LOGO) ===== */
 [class*="progressBar"],
 [class*="loadingBar"] {
-    background: rgba(255,255,255,0.2) !important;
-    border-radius: 10px !important;
-    overflow: hidden !important;
+    background: #e2e8f0 !important; 
+    height: 3px !important; 
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    width: 180px !important; 
+    margin: 0 auto !important; 
 }
 
 [class*="progressBar"] [class*="progress"],
 [class*="loadingBar"] [class*="fill"] {
-    background: linear-gradient(90deg, #fff 0%, #a8edea 100%) !important;
-    box-shadow: 0 0 20px rgba(255,255,255,0.5) !important;
-    animation: shimmer 1.5s ease-in-out infinite !important;
-}
-
-@keyframes shimmer {
-    0% { background-position: -200% center; }
-    100% { background-position: 200% center; }
-}
-
-/* ===== PARTICLES EFFECT ===== */
-[class*="splashScreen"]::before {
-    content: "" !important;
-    position: absolute !important;
-    width: 100% !important;
-    height: 100% !important;
-    background-image: 
-        radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px),
-        radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px) !important;
-    background-size: 50px 50px !important;
-    background-position: 0 0, 25px 25px !important;
-    animation: particleMove 20s linear infinite !important;
-}
-
-@keyframes particleMove {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(50px); }
-}
-
-/* ===== CUSTOM MESSAGES ===== */
-/* Random loading tips */
-[class*="splashScreen"] [class*="tips"]::before {
-    content: "💡 Tip: Press Ctrl+Shift+I to open DevTools!" !important;
-}
-
-/* ===== THEME VARIANTS ===== */
-
-/* Dark Purple Theme */
-.loader-purple [class*="splashScreen"] {
-    background: linear-gradient(135deg, #1e1e2e 0%, #2d2b55 100%) !important;
-}
-
-/* Cyberpunk Theme */
-.loader-cyber [class*="splashScreen"] {
-    background: linear-gradient(135deg, #0f0f23 0%, #1a0933 100%) !important;
-}
-
-.loader-cyber [class*="splashScreen"]::after {
-    content: "INITIALIZING NEURAL LINK... █▓▒░" !important;
-    font-family: 'Courier New', monospace !important;
-    color: #00ff9f !important;
-    text-shadow: 0 0 10px #00ff9f !important;
-}
-
-/* Minimal Theme */
-.loader-minimal [class*="splashScreen"] {
-    background: #ffffff !important;
-}
-
-.loader-minimal [class*="splashScreen"]::after {
-    color: #000000 !important;
-}
-
-/* Gaming Theme */
-.loader-gaming [class*="splashScreen"] {
-    background: linear-gradient(135deg, #ff0080 0%, #ff8c00 50%, #40e0d0 100%) !important;
-    background-size: 400% 400% !important;
-}
-
-.loader-gaming [class*="splashScreen"]::after {
-    content: "🎮 LOADING GAME... READY PLAYER ONE!" !important;
+    background: #2563eb !important; 
+    box-shadow: none !important;
+    border-radius: 4px !important;
+    animation: none !important; 
 }
