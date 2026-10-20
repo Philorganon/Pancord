@@ -1,0 +1,23 @@
+{
+    "name": "fake-nitro-emojis",
+    "displayName": "Fake Nitro — Universal Emoji & Sticker Sender",
+    "version": "1.2.0",
+    "author": "NsnDev",
+    "description": "Kirim emoji dan stiker kustom dari server mana pun tanpa Nitro dengan mengonversinya secara otomatis ke link CDN Discord.",
+    "hooks": [
+        "afterInject",
+        "onDiscordStart"
+    ],
+    "config": {
+        "enabled": true,
+        "emojiSize": 48,
+        "stickerSize": 160,
+        "animated": true,
+        "unlockPicker": true,
+        "unlockStickers": true,
+        "sendAsLink": true,
+        "sendStickerDirectly": true,
+        "quality": "lossless"
+    },
+    "dependencies": []
+}

@@ -1,0 +1,19 @@
+{
+    "name": "split-view",
+    "displayName": "Split View — Dual Chat & Multitasking",
+    "version": "1.1.0",
+    "author": "NsnDev",
+    "description": "Membagi layar chat Discord menjadi dua kolom berdampingan (side-by-side) untuk memantau dua channel atau DM sekaligus.",
+    "hooks": [
+        "afterInject",
+        "onDiscordStart"
+    ],
+    "config": {
+        "enabled": false,
+        "hotkey": "ctrl+\\",
+        "defaultSplitRatio": 50,
+        "showToolbarButton": true,
+        "saveLastChannel": true
+    },
+    "dependencies": []
+}

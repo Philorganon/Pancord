@@ -42,7 +42,7 @@ Kalau Discord mengganti nama class setelah update, cukup sesuaikan daftar grup d
 | `blurOnStart` | `false` | nyalakan blur sejak Discord start (kalau belum ada status tersimpan) |
 | `cleanUiOnStart` | `false` | idem untuk Clean UI |
 | `guardIntervalMs` | `5000` | jeda pengecekan ulang; style/indikator dipasang lagi kalau Discord menghapusnya |
-| `blur.*` | semua `true` | `avatars`, `usernames`, `text`, `images`, `channels` |
+| `blur.*` | semua `true` | `avatars`, `usernames`, `text`, `images`, `channels`, dan `rows` (default **mati**) |
 | `cleanUi.*` | semua `true` | `guilds`, `sidebar`, `members`, `panels`, `toolbar` |
 
 Contoh: hanya blur nama & avatar, jangan sembunyikan toolbar saat Clean UI:
@@ -77,3 +77,18 @@ window.__privacyBlur.stop();                       // lepas semua (hotkey, style
 | Indikator hilang | `showIndicator: false`, atau sedang Clean UI; cek `window.__privacyBlur.status()` |
 | Blur tidak kembali saat hover | `revealOnHover: false` |
 | Ingin bersih total sebelum screenshot | Nyalakan Clean UI — indikator otomatis ikut disembunyikan |
+
+## Catatan selector
+
+Discord memakai dua pola nama class: `nama-hash` (build lama) dan `nama_hash` (build sekarang,
+mis. `username_c19a55`). Karena itu plugin ini mencocokkan **tanpa pemisah** dan dengan flag `i`,
+jadi perubahan pemisah maupun kapitalisasi (`replyAvatar` vs `avatar`) tidak mematikan blur.
+
+Editor CSS paling gampang dicek dari console Discord:
+
+```js
+window.__privacyBlur.status()   // grup mana yang aktif
+```
+
+Kalau ada elemen yang masih lolos, ambil nama class-nya dari DevTools lalu tambahkan ke grup yang
+sesuai di `BLUR_GROUPS` (atau nyalakan `blur.rows: true` untuk memblur seluruh baris pesan sekaligus).

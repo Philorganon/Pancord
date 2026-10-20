@@ -257,12 +257,14 @@ async function runInstall() {
 
     const themeNames = Object.keys(themes);
     const choices = [
+        { name: '⚡ Tanpa CSS / Plugins Saja (Default Discord UI)', value: '__none__' },
+        new inquirer.Separator(),
         ...themeNames.map(name => ({
             name: name.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
             value: name
         })),
         new inquirer.Separator(),
-        { name: 'Custom (Blank)', value: '__blank__' }
+        { name: 'Custom (Blank CSS)', value: '__blank__' }
     ];
 
     const { theme } = await inquirer.prompt([{
@@ -273,13 +275,15 @@ async function runInstall() {
         pageSize: 15
     }]);
 
-    const cssContent = theme === '__blank__' ? '/* Write your custom CSS here */\n' : themes[theme];
+    const cssContent = theme === '__none__' 
+        ? '' 
+        : (theme === '__blank__' ? '/* Write your custom CSS here */\n' : themes[theme]);
 
     spinner.start('Stopping Discord...');
     await killDiscord();
     spinner.succeed('Discord stopped');
 
-    spinner.start('Injecting CSS loader...');
+    spinner.start('Injecting Discord...');
     await injectDiscord(resourcePath, cssContent);
     spinner.succeed(chalk.green('Injection successful!'));
 
@@ -292,7 +296,11 @@ async function runInstall() {
 
     await saveConfig({ ...config, lastInjection: new Date().toISOString(), activeTheme: theme });
 
-    console.log(chalk.cyan('\n✓ Theme applied! Open Discord to see changes.'));
+    if (theme === '__none__') {
+        console.log(chalk.cyan('\n✓ Discord berhasil di-inject (Plugins Saja, tanpa CSS kustom)!'));
+    } else {
+        console.log(chalk.cyan('\n✓ Theme applied! Open Discord to see changes.'));
+    }
 
     const { openNow } = await inquirer.prompt([{
         type: 'confirm',
@@ -802,8 +810,10 @@ program
 // ==================== INSTALL COMMAND ====================
 
 program.command('install')
-    .description('Inject CSS loader into Discord')
+    .description('Inject Discord loader with plugins and optional CSS theme')
     .option('-t, --theme <name>', 'Theme to apply')
+    .option('--no-css', 'Inject without applying any CSS theme (plugins only)')
+    .option('-p, --plugins-only', 'Inject Discord for plugins only without custom CSS')
     .option('--no-backup', 'Skip backup (not recommended)')
     .action(async (options) => {
         try {
@@ -828,15 +838,21 @@ program.command('install')
             // Theme selection
             let themeChoice = options.theme;
 
+            if (options.noCss || options.pluginsOnly) {
+                themeChoice = '__none__';
+            }
+
             if (!themeChoice) {
                 const themeNames = Object.keys(themes);
                 const choices = [
+                    { name: '⚡ Tanpa CSS / Plugins Saja (Default Discord UI)', value: '__none__' },
+                    new inquirer.Separator(),
                     ...themeNames.map(name => ({
                         name: name.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
                         value: name
                     })),
                     new inquirer.Separator(),
-                    { name: 'Custom (Blank)', value: '__blank__' }
+                    { name: 'Custom (Blank CSS)', value: '__blank__' }
                 ];
 
                 const answer = await inquirer.prompt([{
@@ -852,7 +868,9 @@ program.command('install')
 
             // Get CSS content
             let cssContent;
-            if (themeChoice === '__blank__') {
+            if (themeChoice === '__none__') {
+                cssContent = '';
+            } else if (themeChoice === '__blank__') {
                 cssContent = '/* Write your custom CSS here */\n';
             } else {
                 cssContent = themes[themeChoice];
@@ -869,10 +887,10 @@ program.command('install')
             await logger.info('Discord processes killed');
 
             // Inject
-            spinner.start('Injecting CSS loader...');
+            spinner.start('Injecting Discord...');
             await injectDiscord(resourcePath, cssContent);
             spinner.succeed(chalk.green('Injection successful!'));
-            await logger.success(`Injection completed with theme: ${themeChoice}`);
+            await logger.success(`Injection completed: ${themeChoice === '__none__' ? 'Plugins Only (No CSS)' : `Theme: ${themeChoice}`}`);
 
             // Deploy enabled plugins
             try {

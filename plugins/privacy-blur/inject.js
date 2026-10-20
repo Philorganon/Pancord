@@ -12,7 +12,7 @@
     'use strict';
 
     const LOG_PREFIX = '[PrivacyBlur]';
-    const VERSION = '1.0.0';
+    const VERSION = '1.0.3';
     const STYLE_ID = 'privacy-blur-styles';
     const INDICATOR_ID = 'privacy-blur-indicator';
     const STORAGE_KEY = 'privacy-blur-state-v1';
@@ -29,7 +29,7 @@
         blurOnStart: false,
         cleanUiOnStart: false,
         guardIntervalMs: 5000,
-        blur: { avatars: true, usernames: true, text: true, images: true, channels: true },
+        blur: { avatars: true, usernames: true, text: true, images: true, channels: true, servers: true, rows: false },
         cleanUi: { guilds: true, sidebar: true, members: true, panels: true, toolbar: true }
     };
 
@@ -53,25 +53,42 @@
     // Selector memakai pencocokan substring karena Discord memberi hash pada nama class
     // (mis. "c19a557985eb7793-username"), sama seperti konvensi di src/css/base.css.
     const BLUR_GROUPS = {
-        avatars: ['[class*="-avatar"]'],
-        usernames: ['[class*="-username"]', '[class*="-nameTag"]', '[class*="-nickname"]', '[class*="-globalName"]'],
-        text: ['[class*="-messageContent"]', '[class*="-markup"]', '[class*="-repliedTextContent"]'],
-        images: [
-            '[class*="-imageWrapper"]',
-            '[class*="-messageContent"] img',
-            '[class*="-messageContent"] video',
-            '[class*="-attachment"] img',
-            '[class*="-embedFull"] img'
+        avatars: ['[class*="avatar"]'],
+        usernames: [
+            '[class*="username"]',
+            '[class*="nameTag"]',
+            '[class*="nickname"]',
+            '[class*="globalName"]',
+            '[class*="headerText"]'
         ],
-        channels: ['[class*="-channelName"]', '[class*="-guildName"]', '[class*="-headerText"]', '[class*="-topic"]']
+        text: ['[class*="messageContent"]', '[class*="markup"]', '[class*="repliedText"]'],
+        images: [
+            '[class*="imageWrapper"]',
+            '[class*="imageContent"]',
+            '[class*="stickerAsset"]',
+            '[class*="assetWrapper"]',
+            '[class*="lottieCanvas"]',
+            '[class*="attachment"]',
+            '[class*="messageContent"] img',
+            '[class*="messageContent"] video',
+            '[class*="embedFull"] img'
+        ],
+        channels: ['[class*="channelName"]', '[class*="guildName"]', '[class*="topic"]'],
+        servers: [
+            '[class*="listItemWrapper"]',
+            '[class*="folderPreviewGuildIcon"]',
+            '[class*="folderIcon"]',
+            '[class*="guildNameText"]'
+        ],
+        rows: ['[class*="messageListItem"]']
     };
 
     const CLEAN_GROUPS = {
-        guilds: ['[class*="-guilds"]'],
-        sidebar: ['[class*="-sidebar"]'],
-        members: ['[class*="-membersWrap"]', '[class*="-members"]'],
-        panels: ['[class*="-panels"]'],
-        toolbar: ['[class*="-toolbar"]']
+        guilds: ['[class*="guilds"]'],
+        sidebar: ['[class*="sidebar"]'],
+        members: ['[class*="membersWrap"]', '[class*="members"]'],
+        panels: ['[class*="panels"]'],
+        toolbar: ['[class*="toolbar"]']
     };
 
     const state = { blur: false, clean: false };
@@ -85,6 +102,14 @@
 
     function activeGroups(groups, flags) {
         return Object.keys(groups).filter((key) => flags[key] !== false);
+    }
+
+    /**
+     * Discord kadang mengubah kapitalisasi nama class (mis. replyAvatar vs avatar),
+     * dan CSS [class*=...] peka huruf besar/kecil. Flag "i" membuat pencocokan aman.
+     */
+    function ci(selector) {
+        return selector.replace(/\[class\*=("([^"]+)")\]/g, '[class*=$1 i]');
     }
 
     function buildCss() {
@@ -104,17 +129,17 @@
         lines.push(`body.pb-clean #${INDICATOR_ID}.pb-hide-in-clean { display: none !important; }`);
 
         for (const key of activeGroups(BLUR_GROUPS, config.blur)) {
-            const selectors = BLUR_GROUPS[key].map((sel) => `body.pb-blur ${sel}`).join(',\n');
+            const selectors = BLUR_GROUPS[key].map((sel) => `body.pb-blur ${ci(sel)}`).join(',\n');
             lines.push(`${selectors} { filter: blur(${px}px) !important; }`);
 
             if (config.revealOnHover) {
-                const hover = BLUR_GROUPS[key].map((sel) => `body.pb-blur.pb-reveal ${sel}:hover`).join(',\n');
+                const hover = BLUR_GROUPS[key].map((sel) => `body.pb-blur.pb-reveal ${ci(sel)}:hover`).join(',\n');
                 lines.push(`${hover} { filter: none !important; }`);
             }
         }
 
         for (const key of activeGroups(CLEAN_GROUPS, config.cleanUi)) {
-            const selectors = CLEAN_GROUPS[key].map((sel) => `body.pb-clean ${sel}`).join(',\n');
+            const selectors = CLEAN_GROUPS[key].map((sel) => `body.pb-clean ${ci(sel)}`).join(',\n');
             lines.push(`${selectors} { display: none !important; }`);
         }
 

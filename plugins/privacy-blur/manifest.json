@@ -1,9 +1,9 @@
 {
     "name": "privacy-blur",
     "displayName": "Privacy Blur — Mode Aman Share Screen",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "author": "NsnDev",
-    "description": "Satu hotkey untuk memblur nama, avatar, isi pesan, gambar, dan nama channel; plus mode Clean UI yang menyembunyikan sidebar, daftar member, panel user, dan toolbar untuk screenshot. Murni CSS + DOM lokal.",
+    "description": "Satu hotkey untuk memblur nama, avatar, isi pesan, gambar, dan nama channel; plus mode Clean UI yang menyembunyikan sidebar, daftar member, panel user, dan toolbar untuk screenshot. Murni CSS + DOM lokal. Selector tahan perubahan pemisah class (\"-\" maupun \"_\").",
     "hooks": [
         "afterInject",
         "onDiscordStart"
@@ -25,7 +25,9 @@
             "usernames": true,
             "text": true,
             "images": true,
-            "channels": true
+            "channels": true,
+            "servers": true,
+            "rows": false
         },
         "cleanUi": {
             "guilds": true,

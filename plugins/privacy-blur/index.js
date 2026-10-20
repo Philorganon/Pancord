@@ -10,7 +10,7 @@ import { createScriptDeployer } from '../../src/plugins/deploy-utils.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const DEFAULT_BLUR = { avatars: true, usernames: true, text: true, images: true, channels: true };
+const DEFAULT_BLUR = { avatars: true, usernames: true, text: true, images: true, channels: true, servers: true, rows: false };
 const DEFAULT_CLEAN = { guilds: true, sidebar: true, members: true, panels: true, toolbar: true };
 
 export default class PrivacyBlur {

@@ -1,0 +1,19 @@
+{
+    "name": "sound-replacer",
+    "displayName": "Sound Replacer — Ganti Suara Notifikasi",
+    "version": "1.0.0",
+    "author": "NsnDev",
+    "description": "Mengganti suara bawaan Discord (notifikasi pesan, join/leave VC, mute, dll) dengan file MP3 milikmu. File di-embed sebagai blob URL di renderer, jadi tidak perlu server dan tidak terhalang CSP.",
+    "hooks": [
+        "afterInject",
+        "onDiscordStart"
+    ],
+    "config": {
+        "enabled": true,
+        "file": "messages.mp3",
+        "hashes": [],
+        "learn": false,
+        "verbose": true
+    },
+    "dependencies": []
+}
