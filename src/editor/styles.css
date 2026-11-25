@@ -244,6 +244,17 @@
             background: var(--success);
             box-shadow: 0 0 20px var(--success-glow);
         }
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-default);
+            text-decoration: none;
+        }
+        .btn-ghost:hover {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border-color: var(--border-strong);
+        }
         .btn-icon {
             width: 16px;
             height: 16px;

@@ -1,0 +1,1178 @@
+/* ============================================
+   OBSIDIAN MINIMAL - REBUILT DISCORD EDITION
+   Matte Monochrome Dark Minimalism
+   Top Server Bar + Moving Member Ticker + Rebuilt Controls
+   ============================================ */
+
+/* ============================================
+   0. FOUNDATION - MINIMALIST DARK TOKENS
+   ============================================ */
+:root,
+html,
+body,
+.theme-dark,
+.theme-midnight,
+.visual-refresh,
+.images-dark {
+    --background-primary: #0B0C0E !important;
+    --background-primary-alt: #0E1013 !important;
+    --background-secondary: #0F1114 !important;
+    --background-secondary-alt: #16191D !important;
+    --background-tertiary: #090A0C !important;
+    --background-accent: #272B33 !important;
+    --background-floating: #14171B !important;
+    --background-nested-floating: #101216 !important;
+    --background-mobile-primary: #0B0C0E !important;
+    --background-mobile-secondary: #0F1114 !important;
+
+    /* Variabel Visual Refresh */
+    --bg-base-primary: #0B0C0E !important;
+    --bg-base-secondary: #0F1114 !important;
+    --bg-base-tertiary: #090A0C !important;
+    --background-base-low: #0F1114 !important;
+    --background-base-lower: #0B0C0E !important;
+    --background-base-lowest: #090A0C !important;
+    --bg-surface-overlay: #14171B !important;
+    --bg-surface-raised: #191C22 !important;
+    --bg-overlay-app-frame: #090A0C !important;
+    --chat-background-default: #0B0C0E !important;
+    --chat-background: #0B0C0E !important;
+    --home-background: #0B0C0E !important;
+
+    --background-modifier-hover: rgba(255, 255, 255, 0.05) !important;
+    --background-modifier-active: rgba(255, 255, 255, 0.09) !important;
+    --background-modifier-selected: rgba(255, 255, 255, 0.11) !important;
+    --background-modifier-accent: rgba(255, 255, 255, 0.06) !important;
+
+    --text-normal: #D8DCE3 !important;
+    --text-default: #ECEEF2 !important;
+    --text-muted: #7F8694 !important;
+    --text-link: #9CC2FF !important;
+    --text-link-hover: #C4DBFF !important;
+    --text-positive: #4ADE80 !important;
+    --text-warning: #FBBF24 !important;
+    --text-danger: #F87171 !important;
+    --text-brand: #E4E7EC !important;
+    --text-strong: #F7F8FA !important;
+
+    --header-primary: #F5F6F8 !important;
+    --header-secondary: #9CA3B0 !important;
+
+    --interactive-normal: #C8CDD6 !important;
+    --interactive-hover: #F5F6F8 !important;
+    --interactive-active: #FFFFFF !important;
+    --interactive-muted: #676E7A !important;
+
+    --icon-primary: #E4E7EC !important;
+    --icon-secondary: #9CA3B0 !important;
+    --icon-muted: #676E7A !important;
+
+    --brand-experiment: #2C313A !important;
+    --brand-experiment-560: #3B424E !important;
+    --brand-experiment-600: #252931 !important;
+
+    --channel-icon: #7F8694 !important;
+    --channel-text-area-placeholder: #676E7A !important;
+
+    --input-background: #14171B !important;
+    --input-placeholder-text: #676E7A !important;
+    --input-placeholder-text-focused: #9CA3B0 !important;
+
+    --scrollbar-auto-thumb: rgba(255, 255, 255, 0.14) !important;
+    --scrollbar-auto-track: transparent !important;
+    --scrollbar-thin-thumb: rgba(255, 255, 255, 0.14) !important;
+    --scrollbar-thin-track: transparent !important;
+
+    --border-subtle: rgba(255, 255, 255, 0.07) !important;
+    --border-strong: rgba(255, 255, 255, 0.16) !important;
+    --focus-primary: rgba(255, 255, 255, 0.28) !important;
+}
+
+/* ============================================
+   1. BASE SURFACE & BERSIHKAN OVERLAY
+   ============================================ */
+html,
+body,
+#app-mount {
+    background-color: #0B0C0E !important;
+    color: #D8DCE3 !important;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+}
+
+#app-mount [class*="appAsidePanelWrapper_"],
+#app-mount [class*="notAppAsidePanel_"],
+#app-mount [class*="app_"],
+#app-mount [class*="appMount_"],
+#app-mount [class*="bg_"],
+#app-mount [class*="layers_"],
+#app-mount [class*="baseLayer_"],
+#app-mount [class*="notAppAsidePanel_"] > [class*="base_"],
+#app-mount [class*="notAppAsidePanel_"] > [class*="base_"] > [class*="content_"],
+#app-mount [class*="page_"],
+#app-mount [class*="privateChannels_"],
+#app-mount [class*="tabBody_"] {
+    background-color: #0B0C0E !important;
+}
+
+/* ============================================
+   2. REBUILD TOTAL TATA LETAK & POSISI TOMBOL
+   - Top Bar: tombol Window di kiri atas
+   - Baris 2: Grid Server horizontal di atas penuh
+   - Baris 3: Nama member online bergerak horizontal di bawah grid server
+   - Baris 4: Chat di kiri, daftar channel + panel user di kanan
+   - Dasar Chat: Header channel + search + toolbar
+   ============================================ */
+
+/* A. Grid Utama: Server di Atas, Chat di Kiri, Channel Sidebar di Kanan */
+#app-mount [class*="base_"]:has(> [class*="content_"] > [class*="sidebar_"]) {
+    grid-template-areas:
+        "titleBar titleBar"
+        "guildsList guildsList"
+        "notice notice"
+        "page channelsList" !important;
+    grid-template-columns: [start] 1fr [pageEnd] min-content [end] !important;
+    grid-template-rows: [top] var(--custom-app-top-bar-height) [titleBarEnd] 62px [guildsEnd] min-content [noticeEnd] 1fr [end] !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+}
+
+#app-mount [class*="content_"]:has(> [class*="sidebar_"]) > [class*="page_"] {
+    grid-area: page !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    border-inline-start: none !important;
+    z-index: 1 !important;
+}
+
+#app-mount [class*="content_"]:has(> [class*="sidebar_"]) > [class*="sidebar_"] {
+    grid-column: start / end !important;
+    grid-row: titleBarEnd / end !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: none !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    position: relative !important;
+    background: transparent !important;
+    border: none !important;
+    pointer-events: none !important;
+}
+
+#app-mount [class*="content_"]:has(> [class*="sidebar_"]) > [class*="sidebar_"]::after {
+    display: none !important;
+}
+
+#app-mount [class*="sidebar_"] > * {
+    pointer-events: auto !important;
+    z-index: 2 !important;
+}
+
+#app-mount [class*="sidebar_"] > [class*="sidebarList_"] {
+    grid-area: channelsList !important;
+    border-inline-start: none !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.07) !important;
+    border-radius: 0 !important;
+    padding-bottom: calc(var(--custom-app-panels-height, 68px) + 14px) !important;
+}
+
+#app-mount [class*="sidebar_"] > nav[class*="guilds_"] {
+    grid-area: guildsList !important;
+}
+
+#app-mount [class*="sidebarResizeHandle_"] {
+    left: auto !important;
+    inset-inline-end: auto !important;
+    right: calc(var(--custom-guild-sidebar-width, 312px) - var(--custom-guild-list-width, 72px) - 2px) !important;
+    top: 64px !important;
+}
+
+/* B. Di dalam Chat: Baris Member Online Horizontal Bergerak di ATAS ChatContent */
+#app-mount [class*="chat_"] {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 0% !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    background-color: #0B0C0E !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] {
+    order: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 0% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    width: 100% !important;
+    background-color: transparent !important;
+}
+
+/* Tangkap baik .membersWrap_ langsung maupun outer wrapper .container_86es0b milik Discord */
+#app-mount [class*="chat_"] > [class*="content_"] > [class*="membersWrap_"],
+#app-mount [class*="chat_"] > [class*="content_"] > aside[class*="members_"],
+#app-mount [class*="chat_"] > [class*="content_"] > [class*="container_"]:has([class*="membersWrap_"]):not(:has([class*="chatContent_"])),
+#app-mount [class*="chat_"] > [class*="content_"] > div:has(> [class*="membersWrap_"]):not(:has([class*="chatContent_"])) {
+    order: 1 !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+    flex: 0 0 56px !important;
+    background-color: #0D0F12 !important;
+    border: none !important;
+    border-inline-start: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+    overflow: hidden !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] [class*="membersWrap_"],
+#app-mount [class*="chat_"] > [class*="content_"] > aside[class*="members_"] {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+    flex: 0 0 56px !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-inline-start: none !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] > main[class*="chatContent_"],
+#app-mount [class*="chat_"] > [class*="content_"] > [class*="chatContent_"],
+#app-mount [class*="chat_"] > [class*="content_"] > :has([class*="chatContent_"]) {
+    order: 2 !important;
+    flex: 1 1 0% !important;
+    min-height: 120px !important;
+    height: auto !important;
+    width: 100% !important;
+}
+
+#app-mount [class*="chatContent_"] {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
+    width: 100% !important;
+}
+
+#app-mount [class*="chatContent_"] > [class*="messagesWrapper_"] {
+    flex: 1 1 0% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    width: 100% !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] > [class*="searchResultsWrap_"] {
+    order: 3 !important;
+    width: 100% !important;
+    max-height: 42% !important;
+    border-left: none !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* C. Header Channel + Toolbar pindah ke BAWAH chat & dibalik sisinya */
+#app-mount [class*="chat_"] > [class*="subtitleContainer_"] {
+    order: 2 !important;
+    flex: 0 0 auto !important;
+    background-color: transparent !important;
+}
+
+#app-mount section[class*="title_"] [class*="upperContainer_"] {
+    flex-direction: row-reverse !important;
+}
+
+#app-mount section[class*="title_"] [class*="toolbar_"] {
+    flex-direction: row-reverse !important;
+    margin-right: auto !important;
+    margin-left: 8px !important;
+}
+
+/* D. Top Bar: Tombol Window (Close/Min/Max) pindah ke KIRI ATAS minimalis */
+#app-mount [class*="bar_"]:has([class*="winButtons_"]),
+#app-mount [class*="systemBar_"]:has([class*="winButtons_"]) {
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding-inline: 8px 12px !important;
+    background-color: #0E1013 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+    box-sizing: border-box !important;
+}
+
+#app-mount [class*="bar_"]:has([class*="winButtons_"]) [class*="winButtons_"] {
+    flex-direction: row-reverse !important;
+    flex: 0 0 auto !important;
+    margin-left: 0 !important;
+    margin-right: 4px !important;
+}
+
+#app-mount [class*="bar_"]:has([class*="winButtons_"]) [class*="winButtonsWithDivider_"]::before {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+#app-mount [class*="bar_"]:has([class*="winButtons_"]) [class*="trailing_"] {
+    flex-direction: row-reverse !important;
+    justify-content: flex-end !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    margin-left: 0 !important;
+    margin-right: auto !important;
+}
+
+#app-mount [class*="bar_"]:has([class*="winButtons_"]) [class*="leading_"] {
+    flex-direction: row-reverse !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+}
+
+#app-mount [class*="bar_"]:has([class*="winButtons_"]) [class*="title_"] {
+    position: absolute !important;
+    top: 4px !important;
+    bottom: auto !important;
+    inset-inline: auto !important;
+    left: 50% !important;
+    right: auto !important;
+    width: fit-content !important;
+    height: 22px !important;
+    transform: translateX(-50%) !important;
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 999px !important;
+    padding: 0 12px !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: #9CA3B0 !important;
+    pointer-events: none !important;
+    gap: 6px !important;
+}
+
+/* E. Chatbox: Tombol Emoji/Sticker/GIF ke KIRI, Attach (+) ke KANAN */
+#app-mount [class*="channelTextArea_"] [class*="scrollableContainer_"] > [class*="inner_"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    padding-inline: 10px !important;
+}
+
+#app-mount [class*="channelTextArea_"] [class*="buttons_"] {
+    order: 1 !important;
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    align-items: center !important;
+    gap: 4px !important;
+    margin: 0 10px 0 0 !important;
+}
+
+#app-mount [class*="channelTextArea_"] [class*="textArea_"] {
+    order: 2 !important;
+}
+
+#app-mount [class*="channelTextArea_"] [class*="attachWrapper_"] {
+    order: 3 !important;
+    margin-left: 8px !important;
+    margin-right: 0 !important;
+}
+
+/* F. User Panel: Mic/Deafen/Settings ke KIRI, Profil ke KANAN */
+#app-mount [class*="panels_"] [class*="container_"]:has([class*="buttons_"]) {
+    flex-direction: row-reverse !important;
+}
+
+/* G. Message Hover Bar ke KIRI pesan */
+#app-mount [class*="message_"] > [class*="buttonContainer_"] {
+    left: 72px !important;
+    right: auto !important;
+}
+
+#app-mount [class*="hoverButtonGroup_"] {
+    flex-direction: row-reverse !important;
+}
+
+/* ============================================
+   3. NAMA ORANG ONLINE HORIZONTAL SCROLLABLE
+   ============================================ */
+#app-mount [class*="chat_"] > [class*="content_"] [class*="membersWrap_"],
+#app-mount [class*="chat_"] > [class*="content_"] > aside[class*="members_"] {
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(255, 255, 255, 0.30) rgba(255, 255, 255, 0.04) !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] [class*="membersWrap_"]::-webkit-scrollbar,
+#app-mount [class*="chat_"] > [class*="content_"] > aside[class*="members_"]::-webkit-scrollbar {
+    height: 6px !important;
+    width: 0 !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] [class*="membersWrap_"]::-webkit-scrollbar-button,
+#app-mount [class*="chat_"] > [class*="content_"] > aside[class*="members_"]::-webkit-scrollbar-button {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] [class*="membersWrap_"]::-webkit-scrollbar-track,
+#app-mount [class*="chat_"] > [class*="content_"] > aside[class*="members_"]::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.04) !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] [class*="membersWrap_"]::-webkit-scrollbar-thumb,
+#app-mount [class*="chat_"] > [class*="content_"] > aside[class*="members_"]::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.28) !important;
+    border-radius: 999px !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] [class*="membersWrap_"]::-webkit-scrollbar-thumb:hover,
+#app-mount [class*="chat_"] > [class*="content_"] > aside[class*="members_"]::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.50) !important;
+}
+
+/* Naikan offsetHeight virtualizer (min-height 8000px) agar ~180+ member langsung termuat di DOM tanpa terpotong di ~20 nama, tetap ter-clip rapi di 56px */
+#app-mount [class*="chat_"] > [class*="content_"] [class*="membersWrap_"] [class*="members_"] {
+    flex: 0 0 auto !important;
+    width: max-content !important;
+    min-width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 8000px !important;
+    max-height: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    background-color: transparent !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    overflow: visible !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] [class*="members_"] > div:not([role="list"]) {
+    width: max-content !important;
+    min-width: 100% !important;
+    max-width: none !important;
+    height: 46px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    overflow: visible !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] [class*="members_"] [role="list"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    max-height: 46px !important;
+    width: max-content !important;
+    min-width: max-content !important;
+    padding: 0 12px !important;
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
+}
+
+/* Ratakan wrapSection/container section di dalam role=list agar tidak menumpuk ke bawah */
+#app-mount [class*="chat_"] > [class*="content_"] [class*="members_"] [role="list"] > *:has([class*="member_"], [class*="membersGroup_"]):not([class*="member_"]):not([class*="membersGroup_"]) {
+    display: contents !important;
+}
+
+/* Sembunyikan HANYA spacer kosong virtualizer, jangan sembunyikan header/kartu paling kiri */
+#app-mount [class*="chat_"] > [class*="content_"] [class*="members_"] [role="list"] > div[aria-hidden="true"]:empty {
+    display: none !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] [class*="members_"] [role="list"] > * {
+    position: relative !important;
+    inset: auto !important;
+    transform: none !important;
+    flex-shrink: 0 !important;
+    max-height: 40px !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] [class*="membersGroup_"] {
+    display: inline-flex !important;
+    align-items: center !important;
+    height: 24px !important;
+    padding: 0 9px !important;
+    margin: 0 2px !important;
+    border-radius: 999px !important;
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #8A92A0 !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] [class*="member_"] {
+    display: inline-flex !important;
+    align-items: center !important;
+    width: auto !important;
+    min-width: max-content !important;
+    max-width: 185px !important;
+    height: 32px !important;
+    margin: 0 !important;
+    padding: 0 9px 0 5px !important;
+    border-radius: 999px !important;
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    flex-shrink: 0 !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] [class*="member_"]:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] [class*="memberInner_"],
+#app-mount [class*="chat_"] > [class*="content_"] [class*="member_"] [class*="layout_"] {
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    gap: 6px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] [class*="member_"] [class*="content_"] {
+    min-width: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] [class*="member_"] [class*="subText_"] {
+    display: none !important;
+}
+
+/* ============================================
+   4. TOP GUILD BAR HORIZONTAL (MINIMALIST)
+   ============================================ */
+#app-mount nav[class*="guilds_"] {
+    width: 100% !important;
+    height: 62px !important;
+    min-height: 62px !important;
+    margin-bottom: 0 !important;
+    -webkit-mask: none !important;
+    mask: none !important;
+    background-color: #0F1114 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+    overflow: hidden !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="tree_"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: transparent !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="scroller_"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 12px !important;
+    box-sizing: border-box !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    gap: 6px !important;
+    background-color: transparent !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="scroller_"]::-webkit-scrollbar {
+    height: 3px !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="scroller_"] > [class*="stack_"],
+#app-mount nav[class*="guilds_"] [class*="scroller_"] > [class*="itemsContainer_"],
+#app-mount nav[class*="guilds_"] [class*="scroller_"] [role="group"],
+#app-mount nav[class*="guilds_"] #guild-list-unread-dms {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    width: auto !important;
+    height: 100% !important;
+    background-color: transparent !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="unreadMentionsIndicatorTop_"],
+#app-mount nav[class*="guilds_"] [class*="unreadMentionsIndicatorBottom_"],
+#app-mount nav[class*="guilds_"] [class*="bottomRailNotifCenterButton_"]::before {
+    display: none !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="bottomRailNotifCenterButton_"] {
+    padding: 0 6px !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="tutorialContainer_"] {
+    background-color: transparent !important;
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="listItemWrapper_"],
+#app-mount nav[class*="guilds_"] [class*="blobContainer_"],
+#app-mount nav[class*="guilds_"] [class*="blobContainer_"][class*="selected_"] {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="listItem_"] {
+    width: auto !important;
+    height: 48px !important;
+    flex-shrink: 0 !important;
+    align-items: center !important;
+    padding: 0 2px !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="pill_"] {
+    top: -6px !important;
+    left: 50% !important;
+    transform: translateX(-50%) rotate(90deg) !important;
+    pointer-events: none !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="wrapper_"] [class*="childWrapper_"] {
+    background-color: #1A1D23 !important;
+    color: #E4E7EC !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="wrapper_"]:hover [class*="childWrapper_"],
+#app-mount nav[class*="guilds_"] [class*="wrapper_"][class*="selected_"] [class*="childWrapper_"] {
+    background-color: #2E3440 !important;
+    color: #FFFFFF !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="blobContainer_"][class*="selected_"] svg,
+#app-mount nav[class*="guilds_"] [class*="wrapper_"][class*="selected_"] svg {
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.22)) !important;
+}
+
+/* Folder Server Horizontal */
+#app-mount nav[class*="guilds_"] [class*="folderGroup_"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    width: auto !important;
+    height: 50px !important;
+    gap: 4px !important;
+    padding: 0 4px !important;
+    position: relative !important;
+    flex-shrink: 0 !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="folderGroup_"]:not([class*="isExpanded_"]) > ul {
+    display: none !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="folderGroup_"][class*="isExpanded_"] > ul {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    height: 48px !important;
+    width: auto !important;
+    gap: 4px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="folderPreviewWrapper_"],
+#app-mount nav[class*="guilds_"] [class*="folderPreview_"],
+#app-mount nav[class*="guilds_"] [class*="folderButton_"],
+#app-mount nav[class*="guilds_"] [class*="folderButtonContent_"],
+#app-mount nav[class*="guilds_"] [class*="folderButtonInner_"],
+#app-mount nav[class*="guilds_"] [class*="folderHeader_"] {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="folderIconWrapper_"],
+#app-mount nav[class*="guilds_"] [class*="folderIcon_"] {
+    border: none !important;
+    border-radius: 14px !important;
+    box-shadow: none !important;
+}
+
+#app-mount [class*="folderPreviewGuildIcon_"] {
+    border-radius: 6px !important;
+}
+
+#app-mount [class*="folderPreviewGuildIcon_"][class*="noIcon_"],
+#app-mount [class*="guildIcon_"][class*="noIcon_"] {
+    background-color: #232730 !important;
+    color: #E4E7EC !important;
+}
+
+#app-mount [class*="folderGroupBackground_"],
+#app-mount [class*="expandedFolderBackground_"] {
+    inset: 2px 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    border-radius: 14px !important;
+}
+
+#app-mount [class*="guildSeparator_"] {
+    background-color: rgba(255, 255, 255, 0.10) !important;
+    width: 1px !important;
+    height: 28px !important;
+    margin: 0 4px !important;
+}
+
+#app-mount [class*="circleIconButton_"] {
+    background-color: #1A1D23 !important;
+    color: #C8CDD6 !important;
+}
+
+#app-mount [class*="circleIconButton_"]:hover,
+#app-mount [class*="circleIconButton_"][class*="selected_"] {
+    background-color: #2E3440 !important;
+    color: #FFFFFF !important;
+}
+
+/* ============================================
+   5. SIDEBAR CHANNEL, PANEL USER & BOTTOM BAR
+   ============================================ */
+#app-mount [class*="sidebarList_"],
+#app-mount [class*="sidebarListRounded_"] {
+    background-color: #0F1114 !important;
+    position: relative !important;
+}
+
+#app-mount [class*="sidebarList_"] nav[class*="container_"],
+#app-mount [class*="sidebarList_"] [class*="scroller_"],
+#app-mount [class*="sidebarList_"] [class*="privateChannels_"],
+#app-mount [class*="sidebarList_"] #channels,
+#app-mount [class*="headerGlass_"],
+#app-mount [class*="headerEllipseBackdrop_"],
+#app-mount [class*="headerEllipseForeground_"] {
+    background-color: transparent !important;
+}
+
+#app-mount [class*="sidebarList_"] header[class*="header_"],
+#app-mount nav[class*="container_"] > header[class*="header_"] {
+    background-color: #0F1114 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
+#app-mount [class*="privateChannels_"] [class*="interactiveSelected_"],
+#app-mount [class*="privateChannels_"] [class*="selected_"] [class*="layout_"],
+[class*="modeSelected_"] [class*="link_"],
+[class*="selectedChannel_"] [class*="link_"] {
+    background-color: rgba(255, 255, 255, 0.09) !important;
+    border-radius: 6px !important;
+}
+
+[class*="modeSelected_"] [class*="name_"] {
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+}
+
+[class*="modeMuted_"] [class*="name_"] {
+    color: #5D6470 !important;
+}
+
+#app-mount [class*="privateChannels_"] [class*="searchBar_"] {
+    background-color: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
+#app-mount [class*="privateChannels_"] [class*="searchBarComponent_"] {
+    background-color: #16191D !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 6px !important;
+    color: #8F96A3 !important;
+}
+
+/* Panel User Kanan Bawah */
+#app-mount section[class*="panels_"],
+#app-mount [class*="panels_"] {
+    position: absolute !important;
+    top: auto !important;
+    bottom: var(--custom-panels-spacing, 8px) !important;
+    inset-inline-start: auto !important;
+    left: auto !important;
+    right: var(--custom-panels-spacing, 8px) !important;
+    width: calc(var(--custom-guild-sidebar-width, 312px) - var(--custom-guild-list-width, 72px) - var(--custom-panels-spacing, 8px) * 2) !important;
+    z-index: 10 !important;
+    background-color: #14171B !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+}
+
+#app-mount [class*="panels_"] [class*="container_"],
+#app-mount [class*="postEnrollmentBackground_"] {
+    background-color: transparent !important;
+}
+
+#app-mount [class*="panels_"] [class*="container_"]:has([class*="buttons_"]) {
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 50px !important;
+    min-height: 50px !important;
+    margin: 0 !important;
+    margin-inline-start: 0 !important;
+    padding: 4px 5px !important;
+    gap: 3px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+#app-mount [class*="panels_"] [class*="accountPopoutButtonWrapper_"],
+#app-mount [class*="panels_"] [class*="avatarWrapper_"] {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    margin-inline-start: 0 !important;
+    padding: 2px !important;
+    gap: 5px !important;
+    overflow: hidden !important;
+}
+
+#app-mount [class*="panels_"] [class*="nameTag_"],
+#app-mount [class*="panels_"] [class*="panelTitleContainer_"],
+#app-mount [class*="panels_"] [class*="panelSubtextContainer_"] {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+#app-mount [class*="panels_"] [class*="buttons_"] {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1px !important;
+    flex: 0 0 auto !important;
+    max-width: 100% !important;
+}
+
+#app-mount [class*="panels_"] button,
+#app-mount [class*="panels_"] button[class*="button_"],
+#app-mount [class*="panels_"] button[class*="lookFilled_"],
+#app-mount [class*="panels_"] button[class*="button_"][class*="lookFilled_"],
+#app-mount [class*="panels_"] [class*="audioButtonWithMenu_"],
+#app-mount [class*="panels_"] [class*="buttonChevron_"] {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 6px !important;
+    color: #9CA3B0 !important;
+    font-weight: 500 !important;
+}
+
+#app-mount [class*="panels_"] button:hover,
+#app-mount [class*="panels_"] button[class*="lookFilled_"]:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: #FFFFFF !important;
+}
+
+#app-mount [class*="panels_"] [class*="buttons_"] button:not([class*="buttonChevron_"]),
+#app-mount [class*="panels_"] [class*="audioButtonWithMenu_"],
+#app-mount [class*="panels_"] [class*="audioButtonParent_"] > button:first-child {
+    width: 22px !important;
+    min-width: 22px !important;
+    height: 28px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#app-mount [class*="panels_"] [class*="buttonChevron_"] {
+    width: 11px !important;
+    min-width: 11px !important;
+    height: 28px !important;
+    padding: 0 !important;
+    margin-inline-start: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#app-mount [class*="panels_"] [class*="buttons_"] svg {
+    color: currentColor !important;
+}
+
+#app-mount [class*="panels_"] [class*="buttonChevronIcon_"] {
+    width: 12px !important;
+    height: 12px !important;
+}
+
+#app-mount [class*="panels_"] button[aria-checked="true"] {
+    background-color: rgba(248, 113, 113, 0.16) !important;
+    color: #F87171 !important;
+}
+
+/* Bottom Channel Toolbar */
+#app-mount section[class*="title_"] {
+    background-color: #0F1114 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.07) !important;
+    border-bottom: none !important;
+}
+
+#app-mount section[class*="title_"] [class*="children_"]::after {
+    display: none !important;
+}
+
+#app-mount [class*="search_"] [class*="searchBar_"] {
+    background-color: #16191D !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 6px !important;
+}
+
+/* ============================================
+   6. CHAT AREA, PESAN & CHATBOX MINIMALIS
+   ============================================ */
+#app-mount main[class*="chatContent_"],
+#app-mount [class*="chatContent_"],
+#app-mount [class*="peopleColumn_"] {
+    background-color: #0B0C0E !important;
+}
+
+#app-mount [class*="nowPlayingColumn_"],
+#app-mount [class*="nowPlayingColumn_"] [class*="container_"] {
+    background-color: #0F1114 !important;
+}
+
+#app-mount [class*="chatContent_"] [class*="scroller_"],
+#app-mount [class*="messagesWrapper_"],
+#app-mount [class*="scrollerContent_"],
+#app-mount ol[class*="scrollerInner_"],
+#app-mount [class*="uploadArea_"],
+#app-mount [class*="chatGradient_"],
+#app-mount [class*="chatGradientBase_"],
+#app-mount form[class*="form_"],
+#app-mount [class*="channelBottomBarArea_"],
+#app-mount [class*="subtitleContainer_"],
+#app-mount [class*="upperContainer_"] {
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+#app-mount [class*="channelTextArea_"] {
+    background-color: transparent !important;
+    position: relative !important;
+}
+
+[class*="channelTextArea_"] [class*="scrollableContainer_"],
+[class*="channelTextArea_"] [class*="themedBackground_"] {
+    background-image: none !important;
+    background-color: #14171B !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    border-radius: 10px !important;
+    box-shadow: none !important;
+}
+
+[class*="channelTextArea_"] [class*="themedBackground_"]:focus-within {
+    border-color: rgba(255, 255, 255, 0.22) !important;
+}
+
+[class*="channelTextArea_"] [class*="attachWrapper_"],
+[class*="channelTextArea_"] [class*="buttons_"] > [class*="buttonContainer_"] {
+    background: transparent !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+[class*="channelTextArea_"] [class*="buttons_"] button,
+[class*="channelTextArea_"] [class*="attachButton_"] {
+    background-color: transparent !important;
+    border: 1px solid transparent !important;
+    border-radius: 6px !important;
+    color: #9CA3B0 !important;
+    min-width: 30px !important;
+    width: 30px !important;
+    height: 30px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    margin-inline: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+[class*="channelTextArea_"] [class*="buttons_"] button:hover,
+[class*="channelTextArea_"] [class*="attachButton_"]:hover {
+    background-color: rgba(255, 255, 255, 0.07) !important;
+    color: #FFFFFF !important;
+}
+
+[class*="channelTextArea_"] [class*="button_"] svg {
+    color: currentColor !important;
+    fill: currentColor !important;
+}
+
+[class*="message_"][class*="cozyMessage_"][class*="cozy_"] {
+    background-color: transparent !important;
+}
+
+[class*="message_"][class*="cozyMessage_"]:hover {
+    background-color: rgba(255, 255, 255, 0.025) !important;
+}
+
+[class*="message_"][class*="mentioned_"] {
+    background-color: rgba(156, 194, 255, 0.08) !important;
+    border-left: 2px solid #9CC2FF !important;
+}
+
+[class*="divider_"][class*="hasContent_"] {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[class*="divider_"][class*="hasContent_"] [class*="content_"] {
+    background-color: #14171B !important;
+    color: #8A92A0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    border-radius: 999px !important;
+    padding: 2px 10px !important;
+    font-size: 11px !important;
+}
+
+/* ============================================
+   7. REACTIONS, EMBEDS, POPOUT, TOMBOL & SCROLLBAR
+   ============================================ */
+[class*="reaction_"] {
+    background-color: #14171B !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 6px !important;
+}
+
+[class*="reaction_"]:hover {
+    background-color: #1C2026 !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+[class*="reaction_"][class*="reacted_"] {
+    background-color: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+[class*="hoverButtonGroup_"],
+[class*="messageActionBar_"],
+[class*="messageActions_"] {
+    background-color: #14171B !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+[class*="embedWrapper_"],
+[class*="embed_"]:not([class*="embedField"]):not([class*="embedAuthor"]):not([class*="embedTitle"]):not([class*="embedDescription"]):not([class*="embedFooter"]):not([class*="embedInner"]):not([class*="embedContent"]):not([class*="embedCard"]),
+[class*="attachment_"] {
+    background-color: #121519 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-left: 3px solid rgba(255, 255, 255, 0.24) !important;
+    border-radius: 8px !important;
+}
+
+[class*="embedInner_"],
+[class*="embedContent_"],
+[class*="embedCard_"] {
+    background-color: transparent !important;
+    border: none !important;
+}
+
+[class*="tooltip_"],
+#popover-portal [class*="layer_"],
+[class*="messagesPopoutWrap_"],
+[class*="recentMentionsPopout_"],
+[data-mana-component="modal"],
+[role="dialog"][class*="root_"],
+[class*="standardSidebarView_"] {
+    background-color: #121418 !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    border-radius: 8px !important;
+    color: #ECEEF2 !important;
+}
+
+[class*="standardSidebarView_"] [class*="sidebarRegion_"],
+[class*="standardSidebarView_"] [class*="sidebarRegionScroller_"],
+[class*="standardSidebarView_"] [class*="contentRegion_"] {
+    background-color: transparent !important;
+}
+
+button[class*="button_"][class*="colorBrand_"]:not([class*="panels_"] *),
+button[class*="button_"][class*="lookFilled_"]:not([class*="colorRed_"]):not([class*="colorGreen_"]):not([class*="panels_"] *) {
+    background-color: #F4F4F5 !important;
+    border: 1px solid #F4F4F5 !important;
+    border-radius: 6px !important;
+    color: #0B0C0E !important;
+    font-weight: 600 !important;
+}
+
+button[class*="button_"][class*="colorBrand_"]:not([class*="panels_"] *):hover,
+button[class*="button_"][class*="lookFilled_"]:not([class*="colorRed_"]):not([class*="colorGreen_"]):not([class*="panels_"] *):hover {
+    background-color: #D4D7DD !important;
+}
+
+button[class*="button_"][class*="lookOutlined_"] {
+    background-color: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    border-radius: 6px !important;
+    color: #ECEEF2 !important;
+}
+
+::-webkit-scrollbar {
+    width: 6px !important;
+    height: 6px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-radius: 999px !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.24) !important;
+}

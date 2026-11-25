@@ -1,7 +1,10 @@
 import fs from 'fs-extra';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import chalk from 'chalk';
 import { createBackup } from './backup.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 function validateCSS(css, maxSize = 5 * 1024 * 1024) {
     const warnings = [];
@@ -48,7 +51,7 @@ function validateCSS(css, maxSize = 5 * 1024 * 1024) {
         if (line.length === 0 || line.startsWith('//') || line.startsWith('/*') || line.startsWith('*') || line.endsWith('*/') || line.endsWith('{') || line.endsWith('}')) {
             continue;
         }
-        if (!line.endsWith(';') && !line.endsWith(',') && !line.includes(':')) {
+        if (!line.endsWith(';') && !line.includes(':') && !line.endsWith(',')) {
             warnings.push(`Possible missing semicolon at line ${i + 1}`);
             break;
         }
@@ -70,127 +73,28 @@ export async function injectDiscord(resourcePath, initialCSS) {
     }
 
     if (fs.existsSync(appAsarPath) && !fs.existsSync(originalAsarPath)) {
+        await createBackup(appAsarPath);
         console.log('Renaming app.asar -> original.asar...');
         await fs.rename(appAsarPath, originalAsarPath);
-        await createBackup(appAsarPath);
     }
 
     await fs.ensureDir(appFolder);
     await fs.writeFile(path.join(appFolder, 'custom.css'), initialCSS);
     await fs.writeJson(path.join(appFolder, 'package.json'), { name: "pancord", main: "index.js" });
 
-    const scriptContent = `
-const { app } = require('electron');
-const path = require('path');
-const fs = require('fs');
+    const turboScriptPath = path.join(__dirname, 'turbo-index.cjs');
+    const trimExeSrcPath = path.resolve(__dirname, '..', 'trim_memory.exe');
 
-const cssPath = path.join(__dirname, 'custom.css');
-const settingsPath = path.join(__dirname, 'settings.json');
-
-const getSettings = () => {
-    try { return JSON.parse(fs.readFileSync(settingsPath, 'utf8')); } catch (e) { return {}; }
-};
-
-const applyResources = (window) => {
-    if (window.isDestroyed()) return;
-    const settings = getSettings();
-
-    if (fs.existsSync(cssPath)) {
-        window.webContents.insertCSS(fs.readFileSync(cssPath, 'utf8')).catch(e => {});
+    if (fs.existsSync(turboScriptPath)) {
+        await fs.copy(turboScriptPath, path.join(appFolder, 'index.js'));
+    } else {
+        throw new Error(`Missing runtime bootstrap file: ${turboScriptPath}`);
     }
 
-    // Load plugin scripts from plugin-scripts folder
-    const pluginScriptsDir = path.join(__dirname, 'plugin-scripts');
-    if (fs.existsSync(pluginScriptsDir)) {
-        try {
-            const files = fs.readdirSync(pluginScriptsDir);
-            for (const file of files) {
-                if (file.endsWith('.js')) {
-                    const filePath = path.join(pluginScriptsDir, file);
-                    try {
-                        const code = fs.readFileSync(filePath, 'utf8');
-                        window.webContents.executeJavaScript(code).catch(e => {
-                            console.error('[Injector] Error executing plugin script ' + file + ':', e);
-                        });
-                    } catch (e) {
-                        console.error('[Injector] Error reading plugin script ' + file + ':', e);
-                    }
-                }
-            }
-        } catch (e) {
-            console.error('[Injector] Error reading plugin-scripts directory:', e);
-        }
+    if (fs.existsSync(trimExeSrcPath)) {
+        await fs.copy(trimExeSrcPath, path.join(appFolder, 'trim_memory.exe'));
     }
 
-    const soundUrl = settings.notificationSound;
-    if (soundUrl) {
-        try {
-            const filter = { urls: ["*://*.discord.com/assets/*.mp3", "*://*.discordapp.com/assets/*.mp3", "*://*.discord.com/assets/*.ogg"] };
-            window.webContents.session.webRequest.onBeforeRequest(filter, (details, callback) => {
-                const url = details.url.toLowerCase();
-                if (url.includes('notification') || url.includes('message') || url.includes('23101d2d')) {
-                    return callback({ redirectURL: soundUrl });
-                }
-                callback({});
-            });
-        } catch (e) {}
-
-        const code = \`(function() {
-            if (window._soundHooked) return;
-            window._soundHooked = true;
-            const target = "\${soundUrl}";
-            const isM = (s) => s && typeof s === 'string' && (s.includes('notification') || s.includes('message') || s.includes('assets/'));
-            
-            const desc = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'src');
-            if (desc) {
-                Object.defineProperty(HTMLMediaElement.prototype, 'src', {
-                    get: function() { return desc.get.call(this); },
-                    set: function(v) { return desc.set.call(this, isM(v) ? target : v); }
-                });
-            }
-            
-            const OldAudio = window.Audio;
-            window.Audio = class extends OldAudio {
-                constructor(src) { super(isM(src) ? target : src); }
-            };
-        })();\`;
-        window.webContents.executeJavaScript(code).catch(e => {});
-    }
-
-    // Bridge Discord auth token for plugins
-    try {
-        const apiFilter = { urls: ["*://*.discord.com/api/*", "*://discord.com/api/*"] };
-        window.webContents.session.webRequest.onBeforeSendHeaders(apiFilter, (details, callback) => {
-            const auth = details.requestHeaders['Authorization'] || details.requestHeaders['authorization'];
-            if (auth && typeof auth === 'string' && auth.length > 20 && !auth.startsWith('Bot ')) {
-                global.__DISCORD_USER_TOKEN__ = auth;
-                window.webContents.executeJavaScript(\`
-                    window.__DISCORD_USER_TOKEN__ = \${JSON.stringify(auth)};
-                    if (typeof window.__pft_onTokenCaptured === 'function') {
-                        window.__pft_onTokenCaptured(\${JSON.stringify(auth)});
-                    }
-                \`).catch(() => {});
-            }
-            callback({ requestHeaders: details.requestHeaders });
-        });
-    } catch (e) {}
-
-    if (global.__DISCORD_USER_TOKEN__) {
-        window.webContents.executeJavaScript(\`window.__DISCORD_USER_TOKEN__ = \${JSON.stringify(global.__DISCORD_USER_TOKEN__)};\`).catch(() => {});
-    }
-};
-
-app.on('browser-window-created', (e, window) => {
-    window.webContents.on('dom-ready', () => applyResources(window));
-});
-
-const originalAsar = path.join(process.resourcesPath, 'original.asar');
-if (fs.existsSync(originalAsar)) {
-    require(originalAsar);
-}
-`;
-
-    await fs.writeFile(path.join(appFolder, 'index.js'), scriptContent);
     const setPath = path.join(appFolder, 'settings.json');
     if (!fs.existsSync(setPath)) await fs.writeJson(setPath, {});
 

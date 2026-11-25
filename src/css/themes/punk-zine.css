@@ -1,0 +1,1190 @@
+/* ============================================
+   RIOT PRESS '77 - PUNK FANZINE EDITION
+   Fotokopi, Cut-and-Paste, Selotip, Cap Stempel
+   100% Layout & Button Rebuild - Anti-Korporat
+   ============================================ */
+
+/* ============================================
+   0. XEROX INK & PAPER PALETTE (CSS TOKENS)
+   ============================================ */
+:root,
+html,
+body,
+.theme-dark,
+.theme-midnight,
+.visual-refresh,
+.images-dark {
+    --background-primary: #171614 !important;
+    --background-primary-alt: #100F0D !important;
+    --background-secondary: #12110F !important;
+    --background-secondary-alt: #211F1B !important;
+    --background-tertiary: #0C0B0A !important;
+    --background-accent: #E51937 !important;
+    --background-floating: #1D1B18 !important;
+    --background-nested-floating: #151412 !important;
+    --background-mobile-primary: #171614 !important;
+    --background-mobile-secondary: #100F0D !important;
+
+    /* Token Visual Refresh */
+    --bg-base-primary: #171614 !important;
+    --bg-base-secondary: #12110F !important;
+    --bg-base-tertiary: #0C0B0A !important;
+    --background-base-low: #171614 !important;
+    --background-base-lower: #12110F !important;
+    --background-base-lowest: #0C0B0A !important;
+    --bg-surface-overlay: #1F1D19 !important;
+    --bg-surface-raised: #24211C !important;
+    --bg-overlay-app-frame: #0C0B0A !important;
+    --chat-background-default: #171614 !important;
+    --chat-background: #171614 !important;
+    --home-background: #171614 !important;
+
+    --background-modifier-hover: rgba(255, 230, 0, 0.14) !important;
+    --background-modifier-active: rgba(229, 25, 55, 0.25) !important;
+    --background-modifier-selected: rgba(229, 25, 55, 0.30) !important;
+    --background-modifier-accent: rgba(255, 230, 0, 0.22) !important;
+
+    --text-normal: #EFE8D8 !important;
+    --text-default: #F5EFE0 !important;
+    --text-muted: #B6AE9A !important;
+    --text-link: #FFE600 !important;
+    --text-link-hover: #FF445E !important;
+    --text-positive: #8CE04B !important;
+    --text-warning: #FFE600 !important;
+    --text-danger: #FF3B53 !important;
+    --text-brand: #E51937 !important;
+    --text-strong: #FFFFFF !important;
+
+    --header-primary: #F7F1E1 !important;
+    --header-secondary: #D4CCB8 !important;
+
+    --interactive-normal: #EFE8D8 !important;
+    --interactive-hover: #FFE600 !important;
+    --interactive-active: #FFFFFF !important;
+    --interactive-muted: #8E8778 !important;
+
+    --icon-primary: #F5EFE0 !important;
+    --icon-secondary: #D4CCB8 !important;
+    --icon-muted: #8E8778 !important;
+
+    --brand-experiment: #E51937 !important;
+    --brand-experiment-560: #FF2E4C !important;
+    --brand-experiment-600: #B8102A !important;
+
+    --channel-icon: #FFE600 !important;
+    --channel-text-area-placeholder: #5A554A !important;
+
+    --input-background: #EDE4CF !important;
+    --input-placeholder-text: #5A554A !important;
+    --input-placeholder-text-focused: #141311 !important;
+
+    --scrollbar-auto-thumb: #E51937 !important;
+    --scrollbar-auto-track: #0C0B0A !important;
+    --scrollbar-thin-thumb: #FFE600 !important;
+    --scrollbar-thin-track: #0C0B0A !important;
+
+    --border-subtle: #3D3932 !important;
+    --border-strong: #FFE600 !important;
+    --focus-primary: #FFE600 !important;
+}
+
+/* ============================================
+   1. KERTAS FOTOKOPI XEROX & HALFTONE TEXTURE
+   ============================================ */
+html,
+body {
+    background-color: #100F0D !important;
+}
+
+#app-mount {
+    background-color: #151412 !important;
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Ccircle cx='3' cy='3' r='1.1' fill='%23EAE0C8' fill-opacity='0.06'/%3E%3Ccircle cx='9' cy='9' r='0.9' fill='%23E51937' fill-opacity='0.05'/%3E%3C/svg%3E"),
+        repeating-linear-gradient(
+            -45deg,
+            rgba(234, 224, 200, 0.015) 0px,
+            rgba(234, 224, 200, 0.015) 2px,
+            transparent 2px,
+            transparent 8px
+        ) !important;
+}
+
+#app-mount [class*="appAsidePanelWrapper_"],
+#app-mount [class*="notAppAsidePanel_"],
+#app-mount [class*="app_"],
+#app-mount [class*="appMount_"],
+#app-mount [class*="bg_"],
+#app-mount [class*="layers_"],
+#app-mount [class*="baseLayer_"],
+#app-mount [class*="notAppAsidePanel_"] > [class*="base_"],
+#app-mount [class*="notAppAsidePanel_"] > [class*="base_"] > [class*="content_"],
+#app-mount [class*="page_"],
+#app-mount [class*="privateChannels_"],
+#app-mount [class*="tabBody_"] {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+/* ============================================
+   2. REBUILD TOTAL POSISI PANEL & TOMBOL
+   - Sidebar & Server Dock pindah ke KANAN
+   - Member List pindah ke KIRI
+   - Header Channel + Toolbar pindah ke BAWAH
+   - Tombol Window (X/Min/Max) pindah ke KIRI ATAS
+   - Tombol Chatbox & User Panel dibalik posisinya
+   ============================================ */
+
+/* A. Grid Server Horizontal di ATAS penuh; Chat di KIRI; Channel Sidebar di KANAN */
+#app-mount [class*="base_"]:has(> [class*="content_"] > [class*="sidebar_"]) {
+    grid-template-areas:
+        "titleBar titleBar"
+        "guildsList guildsList"
+        "notice notice"
+        "page channelsList" !important;
+    grid-template-columns: [start] 1fr [pageEnd] min-content [end] !important;
+    grid-template-rows: [top] var(--custom-app-top-bar-height) [titleBarEnd] 68px [guildsEnd] min-content [noticeEnd] 1fr [end] !important;
+}
+
+#app-mount [class*="content_"]:has(> [class*="sidebar_"]) > [class*="page_"] {
+    grid-area: page !important;
+    border-inline-start: none !important;
+    z-index: 1 !important;
+}
+
+#app-mount [class*="content_"]:has(> [class*="sidebar_"]) > [class*="sidebar_"] {
+    grid-column: start / end !important;
+    grid-row: titleBarEnd / end !important;
+    position: relative !important;
+    background: transparent !important;
+    border: none !important;
+    pointer-events: none !important;
+}
+
+#app-mount [class*="content_"]:has(> [class*="sidebar_"]) > [class*="sidebar_"]::after {
+    display: none !important;
+}
+
+#app-mount [class*="sidebar_"] > * {
+    pointer-events: auto !important;
+    z-index: 2 !important;
+}
+
+#app-mount [class*="sidebar_"] > [class*="sidebarList_"] {
+    grid-area: channelsList !important;
+    border-inline-start: none !important;
+    border-left: 3px solid #0A0A09 !important;
+    border-radius: 0 !important;
+    padding-bottom: calc(var(--custom-app-panels-height, 68px) + 14px) !important;
+}
+
+#app-mount [class*="sidebar_"] > nav[class*="guilds_"] {
+    grid-area: guildsList !important;
+}
+
+#app-mount [class*="sidebarResizeHandle_"] {
+    left: auto !important;
+    inset-inline-end: auto !important;
+    right: calc(var(--custom-guild-sidebar-width, 312px) - var(--custom-guild-list-width, 72px) - 2px) !important;
+    top: 70px !important;
+}
+
+/* B. Di dalam Chat, pindahkan Member List ke KIRI dan Chat ke KANAN */
+#app-mount [class*="chat_"] > [class*="content_"] {
+    display: flex !important;
+    flex-direction: row !important;
+    background-color: transparent !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] > [class*="membersWrap_"],
+#app-mount [class*="chat_"] > [class*="content_"] > aside[class*="members_"] {
+    order: 1 !important;
+    border-left: none !important;
+    border-right: 3px dashed #3D3932 !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] > main[class*="chatContent_"],
+#app-mount [class*="chat_"] > [class*="content_"] > [class*="chatContent_"] {
+    order: 2 !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+}
+
+/* C. Pindahkan Header Channel + Toolbar (Pin, Search, Inbox) ke BAWAH */
+#app-mount [class*="chat_"] {
+    display: flex !important;
+    flex-direction: column !important;
+    background-color: transparent !important;
+}
+
+#app-mount [class*="chat_"] > [class*="content_"] {
+    order: 1 !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+}
+
+#app-mount [class*="chat_"] > [class*="subtitleContainer_"] {
+    order: 2 !important;
+    background-color: transparent !important;
+}
+
+/* Di dalam Header Channel, balik posisi tombol Toolbar ke KIRI & nama channel ke KANAN */
+#app-mount section[class*="title_"] [class*="upperContainer_"] {
+    flex-direction: row-reverse !important;
+}
+
+#app-mount section[class*="title_"] [class*="toolbar_"] {
+    flex-direction: row-reverse !important;
+    margin-right: auto !important;
+    margin-left: 8px !important;
+}
+
+/* D. Top Bar System Windows: Tombol Close/Min/Max pindah ke KIRI ATAS */
+#app-mount [class*="bar_"]:has([class*="winButtons_"]),
+#app-mount [class*="systemBar_"]:has([class*="winButtons_"]) {
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding-inline: 0 12px !important;
+    background-color: #100F0D !important;
+    background-image: repeating-linear-gradient(
+        90deg,
+        rgba(234, 224, 200, 0.05) 0px,
+        rgba(234, 224, 200, 0.05) 1px,
+        transparent 1px,
+        transparent 6px
+    ) !important;
+    border-bottom: 3px solid #E51937 !important;
+    box-sizing: border-box !important;
+}
+
+#app-mount [class*="bar_"]:has([class*="winButtons_"]) [class*="winButtons_"] {
+    flex-direction: row-reverse !important;
+    margin-left: 0 !important;
+    margin-right: 6px !important;
+}
+
+#app-mount [class*="bar_"]:has([class*="winButtons_"]) [class*="winButtonsWithDivider_"]::before {
+    display: none !important;
+}
+
+#app-mount [class*="bar_"]:has([class*="winButtons_"]) [class*="trailing_"] {
+    flex-direction: row-reverse !important;
+    justify-content: flex-end !important;
+    margin-left: 0 !important;
+    margin-right: auto !important;
+}
+
+#app-mount [class*="bar_"]:has([class*="winButtons_"]) [class*="leading_"] {
+    flex-direction: row-reverse !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+}
+
+/* Stempel judul bar atas diringkas di tengah agar tidak menutupi tombol window */
+#app-mount [class*="bar_"]:has([class*="winButtons_"]) [class*="title_"] {
+    position: absolute !important;
+    top: 3px !important;
+    bottom: auto !important;
+    left: 50% !important;
+    right: auto !important;
+    inset-inline: auto !important;
+    width: fit-content !important;
+    height: 22px !important;
+    transform: translateX(-50%) rotate(-0.8deg) !important;
+    background-color: #EDE4CF !important;
+    color: #0B0B0A !important;
+    font-family: 'Courier New', Consolas, monospace !important;
+    font-size: 11px !important;
+    font-weight: 900 !important;
+    letter-spacing: 1.5px !important;
+    text-transform: uppercase !important;
+    padding: 0 10px !important;
+    border: 2px solid #0B0B0A !important;
+    box-shadow: 3px 2px 0px #E51937 !important;
+    pointer-events: none !important;
+    gap: 6px !important;
+}
+
+#app-mount [class*="bar_"]:has([class*="winButtons_"]) [class*="title_"] * {
+    color: #0B0B0A !important;
+}
+
+#app-mount [class*="bar_"]:has([class*="winButtons_"]) [class*="title_"]::after {
+    content: "// ZINE '77" !important;
+    color: #E51937 !important;
+}
+
+/* E. Balik posisi tombol Chatbox: Emoji/Sticker/GIF ke KIRI, Attach (+) ke KANAN */
+#app-mount [class*="channelTextArea_"] [class*="scrollableContainer_"] > [class*="inner_"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    padding-inline: 10px !important;
+}
+
+#app-mount [class*="channelTextArea_"] [class*="buttons_"] {
+    order: 1 !important;
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin: 0 10px 0 0 !important;
+}
+
+#app-mount [class*="channelTextArea_"] [class*="textArea_"] {
+    order: 2 !important;
+}
+
+#app-mount [class*="channelTextArea_"] [class*="attachWrapper_"] {
+    order: 3 !important;
+    margin-left: 8px !important;
+    margin-right: 4px !important;
+}
+
+/* F. Balik posisi tombol User Control Panel (Mic/Deaf/Settings ke KIRI, Profil ke KANAN) */
+#app-mount [class*="panels_"] [class*="container_"] {
+    flex-direction: row-reverse !important;
+}
+
+/* G. Pindahkan Floating Hover Toolbar Pesan ke sisi KIRI pesan */
+#app-mount [class*="message_"] > [class*="buttonContainer_"] {
+    left: 72px !important;
+    right: auto !important;
+}
+
+#app-mount [class*="hoverButtonGroup_"] {
+    flex-direction: row-reverse !important;
+}
+
+/* ============================================
+   3. KERTAS POTONGAN, SELOTIP & CAP STEMPEL PANEL
+   ============================================ */
+
+/* Header Channel di Bawah — gaya potongan koran + cap merah */
+#app-mount section[class*="title_"] {
+    background-color: #1A1916 !important;
+    border-top: 3px solid #E51937 !important;
+    border-bottom: none !important;
+    box-shadow: 0 -4px 0 #0A0A09 !important;
+}
+
+#app-mount section[class*="title_"] [class*="title_"],
+#app-mount section[class*="title_"] h1 {
+    background-color: #EDE4CF !important;
+    color: #0B0B0A !important;
+    font-family: 'Courier New', Consolas, monospace !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    padding: 3px 10px !important;
+    border: 2px solid #0B0B0A !important;
+    box-shadow: 3px 3px 0px #FFE600 !important;
+    transform: rotate(-0.8deg) !important;
+}
+
+#app-mount section[class*="title_"] [class*="children_"]::after {
+    display: none !important;
+}
+
+/* Toolbar icon di footer zine */
+#app-mount section[class*="title_"] [class*="toolbar_"] [class*="iconWrapper_"] {
+    background-color: #24211C !important;
+    border: 1.5px solid #EAE0C8 !important;
+    border-radius: 2px !important;
+    padding: 3px !important;
+    margin: 0 3px !important;
+    box-shadow: 2px 2px 0px #E51937 !important;
+}
+
+#app-mount section[class*="title_"] [class*="toolbar_"] [class*="iconWrapper_"]:hover {
+    background-color: #FFE600 !important;
+    color: #0A0A09 !important;
+    transform: translate(-1px, -1px) rotate(2deg) !important;
+}
+
+#app-mount section[class*="title_"] [class*="toolbar_"] [class*="iconWrapper_"]:hover svg {
+    color: #0A0A09 !important;
+    fill: #0A0A09 !important;
+}
+
+/* Search bar kotak koran */
+#app-mount [class*="search_"] [class*="searchBar_"] {
+    background-color: #EDE4CF !important;
+    color: #0B0B0A !important;
+    border: 2px solid #0B0B0A !important;
+    border-radius: 0px !important;
+    box-shadow: 3px 3px 0px #E51937 !important;
+}
+
+#app-mount [class*="search_"] [class*="searchBar_"] *,
+#app-mount [class*="search_"] [class*="searchBar_"] input {
+    color: #0B0B0A !important;
+}
+
+/* Guild Bar HORIZONTAL di Atas — Stiker potongan koran miring bergantian */
+#app-mount nav[class*="guilds_"] {
+    width: 100% !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    margin-bottom: 0 !important;
+    -webkit-mask: none !important;
+    mask: none !important;
+    background-color: #100F0D !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 3px solid #E51937 !important;
+    overflow: hidden !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="tree_"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: transparent !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="scroller_"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 12px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    gap: 6px !important;
+    background-color: transparent !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="scroller_"]::-webkit-scrollbar {
+    height: 4px !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="scroller_"] > [class*="stack_"],
+#app-mount nav[class*="guilds_"] [class*="scroller_"] [role="group"],
+#app-mount nav[class*="guilds_"] #guild-list-unread-dms {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: auto !important;
+    height: 100% !important;
+    background-color: transparent !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="unreadMentionsIndicatorTop_"],
+#app-mount nav[class*="guilds_"] [class*="unreadMentionsIndicatorBottom_"],
+#app-mount nav[class*="guilds_"] [class*="bottomRailNotifCenterButton_"]::before {
+    display: none !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="bottomRailNotifCenterButton_"] {
+    padding: 0 6px !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="tutorialContainer_"] {
+    background-color: transparent !important;
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="listItemWrapper_"] {
+    background-color: transparent !important;
+}
+
+/* Potongan kotak kertas miring untuk tiap ikon server */
+#app-mount nav[class*="guilds_"] [class*="listItem_"] {
+    width: auto !important;
+    height: 52px !important;
+    flex-shrink: 0 !important;
+    align-items: center !important;
+    padding: 0 2px !important;
+    transition: transform 0.12s ease !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="pill_"] {
+    top: -6px !important;
+    left: 50% !important;
+    transform: translateX(-50%) rotate(90deg) !important;
+    pointer-events: none !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="listItem_"]:nth-child(odd) [class*="listItemWrapper_"] {
+    transform: rotate(-2.2deg) !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="listItem_"]:nth-child(even) [class*="listItemWrapper_"] {
+    transform: rotate(2deg) !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="listItem_"]:hover [class*="listItemWrapper_"] {
+    transform: rotate(0deg) scale(1.06) !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="wrapper_"] foreignObject {
+    mask: none !important;
+    -webkit-mask: none !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="blobContainer_"],
+#app-mount nav[class*="guilds_"] [class*="tutorialContainer_"] [class*="wrapper_"] {
+    background-color: transparent !important;
+    border-radius: 2px !important;
+    border: 2px solid #EAE0C8 !important;
+    box-shadow: 3px 3px 0px #0A0A09 !important;
+    box-sizing: border-box !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="wrapper_"] [class*="childWrapper_"] {
+    background-color: #24211C !important;
+    color: #F5EFE0 !important;
+    font-family: 'Courier New', Consolas, monospace !important;
+    font-weight: 900 !important;
+    border-radius: 0px !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="blobContainer_"][class*="selected_"],
+#app-mount nav[class*="guilds_"] [class*="tutorialContainer_"] [class*="wrapper_"][class*="selected_"] {
+    border-color: #FFE600 !important;
+    box-shadow: 3px 3px 0px #E51937 !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="wrapper_"][class*="selected_"] [class*="childWrapper_"] {
+    background-color: #E51937 !important;
+    color: #FFFFFF !important;
+}
+
+/* Folder / Grup Server horizontal bergaya tumpukan kliping */
+#app-mount nav[class*="guilds_"] [class*="folderGroup_"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    width: auto !important;
+    height: 54px !important;
+    gap: 4px !important;
+    padding: 0 4px !important;
+    position: relative !important;
+    flex-shrink: 0 !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="folderGroup_"]:not([class*="isExpanded_"]) > ul {
+    display: none !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="folderGroup_"][class*="isExpanded_"] > ul {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    height: 52px !important;
+    width: auto !important;
+    gap: 4px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="folderPreviewWrapper_"],
+#app-mount nav[class*="guilds_"] [class*="folderPreview_"],
+#app-mount nav[class*="guilds_"] [class*="folderButton_"],
+#app-mount nav[class*="guilds_"] [class*="folderButtonContent_"],
+#app-mount nav[class*="guilds_"] [class*="folderButtonInner_"],
+#app-mount nav[class*="guilds_"] [class*="folderHeader_"] {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+#app-mount nav[class*="guilds_"] [class*="folderIconWrapper_"],
+#app-mount nav[class*="guilds_"] [class*="folderIcon_"] {
+    border: 2px solid #EAE0C8 !important;
+    border-radius: 2px !important;
+    box-shadow: 3px 3px 0px #E51937 !important;
+}
+
+#app-mount [class*="folderPreviewGuildIcon_"] {
+    border-radius: 1px !important;
+}
+
+#app-mount [class*="folderPreviewGuildIcon_"][class*="noIcon_"],
+#app-mount [class*="guildIcon_"][class*="noIcon_"] {
+    background-color: #2B2822 !important;
+    color: #FFE600 !important;
+}
+
+#app-mount [class*="folderGroupBackground_"],
+#app-mount [class*="expandedFolderBackground_"] {
+    inset: 2px 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    background-color: #1F1D19 !important;
+    border: 2px dashed #FFE600 !important;
+    border-radius: 3px !important;
+}
+
+#app-mount [class*="guildSeparator_"] {
+    background-color: #E51937 !important;
+    width: 3px !important;
+    height: 32px !important;
+    margin: 0 4px !important;
+}
+
+#app-mount [class*="circleIconButton_"] {
+    background-color: #EDE4CF !important;
+    color: #0B0B0A !important;
+    border-radius: 2px !important;
+    border: 2px solid #0B0B0A !important;
+    box-shadow: 3px 3px 0px #E51937 !important;
+}
+
+#app-mount [class*="circleIconButton_"]:hover,
+#app-mount [class*="circleIconButton_"][class*="selected_"] {
+    background-color: #FFE600 !important;
+    color: #0B0B0A !important;
+}
+
+/* Channel List & DM List — Kolom Indeks Fanzine + Selotip */
+#app-mount [class*="sidebarList_"],
+#app-mount [class*="sidebarListRounded_"] {
+    background-color: #181714 !important;
+    border-radius: 0px !important;
+    border-right: none !important;
+    position: relative !important;
+}
+
+#app-mount [class*="sidebarList_"] nav[class*="container_"],
+#app-mount [class*="sidebarList_"] [class*="scroller_"],
+#app-mount [class*="sidebarList_"] [class*="privateChannels_"],
+#app-mount [class*="sidebarList_"] #channels,
+#app-mount [class*="headerGlass_"],
+#app-mount [class*="headerEllipseBackdrop_"],
+#app-mount [class*="headerEllipseForeground_"] {
+    background-color: transparent !important;
+}
+
+/* Header Nama Server dengan selotip miring di pojok */
+#app-mount [class*="sidebarList_"] header[class*="header_"],
+#app-mount nav[class*="container_"] > header[class*="header_"] {
+    background-color: #EDE4CF !important;
+    color: #0A0A09 !important;
+    border-bottom: 3px solid #0A0A09 !important;
+    box-shadow: 0 3px 0 #E51937 !important;
+    position: relative !important;
+}
+
+#app-mount [class*="sidebarList_"] header[class*="header_"] * {
+    color: #0A0A09 !important;
+    font-family: 'Courier New', Consolas, monospace !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+}
+
+/* Kategori channel seperti cap mesin tik */
+#app-mount [class*="sidebarList_"] h3[class*="header_"],
+#app-mount [class*="sidebarList_"] [class*="containerDefault_"] [class*="name_"] {
+    font-family: 'Courier New', Consolas, monospace !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Channel terpilih — potongan kertas merah/krem */
+#app-mount [class*="privateChannels_"] [class*="interactiveSelected_"],
+#app-mount [class*="privateChannels_"] [class*="selected_"] [class*="layout_"],
+[class*="modeSelected_"] [class*="link_"],
+[class*="selectedChannel_"] [class*="link_"] {
+    background-color: #EDE4CF !important;
+    border: 2px solid #0A0A09 !important;
+    border-radius: 2px !important;
+    box-shadow: 3px 3px 0px #E51937 !important;
+    transform: rotate(-0.5deg) !important;
+}
+
+[class*="modeSelected_"] [class*="name_"],
+[class*="modeSelected_"] svg,
+#app-mount [class*="privateChannels_"] [class*="interactiveSelected_"] *,
+#app-mount [class*="privateChannels_"] [class*="selected_"] [class*="layout_"] * {
+    color: #0A0A09 !important;
+    font-weight: 900 !important;
+}
+
+[class*="unread_"]:not([class*="unreadMentions"]) [class*="name_"] {
+    color: #FFE600 !important;
+    font-weight: 800 !important;
+}
+
+#app-mount [class*="privateChannels_"] [class*="searchBar_"] {
+    background-color: transparent !important;
+    border-bottom: 2px dashed #4E483D !important;
+}
+
+#app-mount [class*="privateChannels_"] [class*="searchBarComponent_"] {
+    background-color: #EDE4CF !important;
+    color: #0A0A09 !important;
+    border: 2px solid #0A0A09 !important;
+    border-radius: 0px !important;
+    box-shadow: 3px 3px 0px #FFE600 !important;
+    font-family: 'Courier New', Consolas, monospace !important;
+    font-weight: 700 !important;
+}
+
+#app-mount [class*="privateChannels_"] [class*="searchBarComponent_"] * {
+    color: #0A0A09 !important;
+}
+
+/* User Panel Kanan Bawah — terkunci rapi di dalam kolom kanan sidebarList */
+#app-mount section[class*="panels_"],
+#app-mount [class*="panels_"] {
+    position: absolute !important;
+    top: auto !important;
+    bottom: var(--custom-panels-spacing, 8px) !important;
+    inset-inline-start: auto !important;
+    left: auto !important;
+    right: var(--custom-panels-spacing, 8px) !important;
+    width: calc(var(--custom-guild-sidebar-width, 312px) - var(--custom-guild-list-width, 72px) - var(--custom-panels-spacing, 8px) * 2) !important;
+    z-index: 10 !important;
+    background-color: #211F1B !important;
+    border: 2px solid #EAE0C8 !important;
+    border-radius: 2px !important;
+    box-shadow: 4px 4px 0px #E51937 !important;
+    overflow: visible !important;
+}
+
+/* Strip selotip krem di pojok atas panel user */
+#app-mount [class*="panels_"]::before {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    top: -9px !important;
+    right: 18px !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: 62px !important;
+    max-width: 62px !important;
+    height: 16px !important;
+    background-color: rgba(232, 212, 162, 0.80) !important;
+    border-left: 1px dashed rgba(10, 10, 9, 0.35) !important;
+    border-right: 1px dashed rgba(10, 10, 9, 0.35) !important;
+    transform: rotate(5deg) !important;
+    pointer-events: none !important;
+    z-index: 10 !important;
+}
+
+#app-mount [class*="panels_"] button {
+    box-shadow: none !important;
+    border-radius: 2px !important;
+}
+
+#app-mount [class*="panels_"] [class*="container_"],
+#app-mount [class*="postEnrollmentBackground_"] {
+    background-color: transparent !important;
+}
+
+/* Member List (Kiri) — Kolom Kredit Zine */
+#app-mount [class*="membersWrap_"],
+#app-mount [class*="content_"] > aside[class*="members_"] {
+    background-color: #131210 !important;
+}
+
+#app-mount [class*="membersWrap_"] aside[class*="members_"],
+#app-mount [class*="membersWrap_"] [class*="members_"],
+#app-mount [class*="membersWrap_"] > div,
+#app-mount [class*="members_"] > div {
+    background-color: transparent !important;
+    border-right: none !important;
+}
+
+#app-mount [class*="membersGroup_"] {
+    font-family: 'Courier New', Consolas, monospace !important;
+    color: #FFE600 !important;
+    border-bottom: 1px dashed #4E483D !important;
+    letter-spacing: 1px !important;
+}
+
+/* ============================================
+   4. CHAT AREA, PESAN & CHATBOX CUT-AND-PASTE
+   ============================================ */
+#app-mount main[class*="chatContent_"],
+#app-mount [class*="chatContent_"],
+#app-mount [class*="peopleColumn_"] {
+    background-color: transparent !important;
+}
+
+#app-mount [class*="nowPlayingColumn_"],
+#app-mount [class*="nowPlayingColumn_"] [class*="container_"] {
+    background-color: #1A1815 !important;
+    border-left: 2px dashed #4E483D !important;
+}
+
+#app-mount [class*="chatContent_"] [class*="scroller_"],
+#app-mount [class*="messagesWrapper_"],
+#app-mount [class*="scrollerContent_"],
+#app-mount ol[class*="scrollerInner_"],
+#app-mount [class*="uploadArea_"],
+#app-mount [class*="chatGradient_"],
+#app-mount [class*="chatGradientBase_"],
+#app-mount form[class*="form_"],
+#app-mount [class*="channelBottomBarArea_"],
+#app-mount [class*="subtitleContainer_"],
+#app-mount [class*="upperContainer_"] {
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+/* Chatbox — Strip Kertas Fotokopi Kream + Selotip Kiri Atas */
+#app-mount [class*="channelTextArea_"] {
+    background-color: transparent !important;
+    position: relative !important;
+    width: calc(100% - 8px) !important;
+    box-sizing: border-box !important;
+}
+
+[class*="channelTextArea_"] [class*="scrollableContainer_"],
+[class*="channelTextArea_"] [class*="themedBackground_"] {
+    background-image: none !important;
+    background-color: #EDE4CF !important;
+    border: 2.5px solid #0A0A09 !important;
+    border-radius: 2px !important;
+    box-shadow: 5px 5px 0px #E51937 !important;
+    position: relative !important;
+}
+
+[class*="channelTextArea_"]::before {
+    content: "TAPE" !important;
+    display: block !important;
+    position: absolute !important;
+    top: -10px !important;
+    left: 20px !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: 58px !important;
+    max-width: 58px !important;
+    padding: 0 !important;
+    height: 15px !important;
+    line-height: 15px !important;
+    text-align: center !important;
+    font-family: 'Courier New', Consolas, monospace !important;
+    font-size: 9px !important;
+    font-weight: 900 !important;
+    color: rgba(20, 18, 15, 0.55) !important;
+    background-color: rgba(232, 212, 162, 0.85) !important;
+    border-left: 1px dashed rgba(10, 10, 9, 0.35) !important;
+    border-right: 1px dashed rgba(10, 10, 9, 0.35) !important;
+    transform: rotate(-4deg) !important;
+    pointer-events: none !important;
+    z-index: 12 !important;
+}
+
+[class*="channelTextArea_"] [class*="themedBackground_"]:focus-within {
+    box-shadow: 5px 5px 0px #FFE600 !important;
+}
+
+[class*="channelTextArea_"] [class*="slateTextArea_"],
+[class*="channelTextArea_"] [class*="textArea_"] {
+    color: #0D0C0B !important;
+    font-family: 'Courier New', Consolas, monospace !important;
+    font-weight: 600 !important;
+}
+
+[class*="channelTextArea_"] [class*="placeholder_"] {
+    color: #5A5446 !important;
+    font-family: 'Courier New', Consolas, monospace !important;
+    opacity: 1 !important;
+}
+
+[class*="channelTextArea_"] [class*="attachWrapper_"],
+[class*="channelTextArea_"] [class*="buttons_"] > [class*="buttonContainer_"] {
+    background: transparent !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+[class*="channelTextArea_"] [class*="buttons_"] button,
+[class*="channelTextArea_"] [class*="attachButton_"] {
+    background-color: #171614 !important;
+    border: 2px solid #0A0A09 !important;
+    border-radius: 2px !important;
+    color: #F5EFE0 !important;
+    min-width: 30px !important;
+    width: 30px !important;
+    height: 30px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    margin-inline: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+}
+
+[class*="channelTextArea_"] [class*="buttons_"] button:hover,
+[class*="channelTextArea_"] [class*="attachButton_"]:hover {
+    background-color: #E51937 !important;
+    color: #FFFFFF !important;
+    transform: rotate(-3deg) !important;
+}
+
+[class*="channelTextArea_"] [class*="button_"] svg {
+    color: currentColor !important;
+    fill: currentColor !important;
+}
+
+/* Kliping Pesan — Potongan Kertas Halus */
+[class*="message_"][class*="cozyMessage_"][class*="groupStart_"] {
+    border-top: 1px dashed rgba(234, 224, 200, 0.14) !important;
+    margin-top: 6px !important;
+    padding-top: 6px !important;
+}
+
+[class*="message_"][class*="cozyMessage_"]:hover {
+    background-color: rgba(234, 224, 200, 0.06) !important;
+}
+
+[class*="message_"][class*="mentioned_"] {
+    background-color: rgba(229, 25, 55, 0.20) !important;
+    border-left: 5px solid #FFE600 !important;
+}
+
+[class*="messageContent_"],
+[class*="markup_"] {
+    color: #F5EFE0 !important;
+}
+
+[class*="username_"] {
+    background-color: rgba(237, 228, 207, 0.12) !important;
+    padding: 1px 5px !important;
+    border-bottom: 2px solid #E51937 !important;
+    font-family: 'Courier New', Consolas, monospace !important;
+    font-weight: 800 !important;
+}
+
+[class*="timestamp_"] {
+    font-family: 'Courier New', Consolas, monospace !important;
+    color: #B6AE9A !important;
+}
+
+/* Pemisah Tanggal seperti Cap Karet */
+[class*="divider_"][class*="hasContent_"] {
+    border-top: 2px dashed #E51937 !important;
+}
+
+[class*="divider_"][class*="hasContent_"] [class*="content_"] {
+    background-color: #EDE4CF !important;
+    color: #0B0B0A !important;
+    border: 2px solid #0B0B0A !important;
+    box-shadow: 3px 2px 0px #FFE600 !important;
+    font-family: 'Courier New', Consolas, monospace !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    padding: 2px 8px !important;
+    transform: rotate(-1.5deg) !important;
+}
+
+/* Avatar frame kotak kliping */
+[class*="message_"] [class*="avatar_"] {
+    border-radius: 2px !important;
+    border: 2px solid #EAE0C8 !important;
+    box-shadow: 2px 2px 0px #E51937 !important;
+}
+
+/* ============================================
+   5. REACTIONS, HOVER BAR & EMBEDS CUT-OUT
+   ============================================ */
+[class*="reaction_"] {
+    background-color: #211F1B !important;
+    border: 2px solid #EAE0C8 !important;
+    border-radius: 2px !important;
+    box-shadow: 2px 2px 0px #0A0A09 !important;
+}
+
+[class*="reaction_"]:nth-child(odd) {
+    transform: rotate(-1.2deg) !important;
+}
+
+[class*="reaction_"]:nth-child(even) {
+    transform: rotate(1deg) !important;
+}
+
+[class*="reaction_"]:hover {
+    border-color: #FFE600 !important;
+    transform: rotate(0deg) !important;
+}
+
+[class*="reaction_"][class*="reacted_"] {
+    background-color: #E51937 !important;
+    border-color: #FFE600 !important;
+}
+
+[class*="hoverButtonGroup_"],
+[class*="messageActionBar_"],
+[class*="messageActions_"] {
+    background-color: #EDE4CF !important;
+    border: 2px solid #0A0A09 !important;
+    border-radius: 2px !important;
+    box-shadow: 4px 4px 0px #E51937 !important;
+}
+
+[class*="messageActionBar_"] button,
+[class*="messageActions_"] button {
+    background-color: transparent !important;
+    color: #0A0A09 !important;
+}
+
+[class*="messageActionBar_"] button:hover,
+[class*="messageActions_"] button:hover {
+    background-color: #FFE600 !important;
+    color: #0A0A09 !important;
+}
+
+[class*="embedWrapper_"],
+[class*="embed_"]:not([class*="embedField"]):not([class*="embedAuthor"]):not([class*="embedTitle"]):not([class*="embedDescription"]):not([class*="embedFooter"]):not([class*="embedInner"]):not([class*="embedContent"]):not([class*="embedCard"]),
+[class*="attachment_"] {
+    background-color: #1F1D19 !important;
+    border: 2px solid #EAE0C8 !important;
+    border-left: 6px solid #E51937 !important;
+    border-radius: 2px !important;
+    box-shadow: 5px 5px 0px #0A0A09 !important;
+    position: relative !important;
+}
+
+[class*="embedWrapper_"]::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    top: -8px !important;
+    right: 14px !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: 48px !important;
+    max-width: 48px !important;
+    height: 14px !important;
+    background-color: rgba(232, 212, 162, 0.78) !important;
+    transform: rotate(7deg) !important;
+    pointer-events: none !important;
+}
+
+[class*="embedInner_"],
+[class*="embedContent_"],
+[class*="embedCard_"] {
+    background-color: transparent !important;
+    border: none !important;
+}
+
+[class*="blockquoteContainer_"] {
+    background-color: rgba(237, 228, 207, 0.08) !important;
+    border: 1px dashed #EAE0C8 !important;
+    border-radius: 2px !important;
+}
+
+[class*="blockquoteDivider_"] {
+    background-color: #FFE600 !important;
+    width: 4px !important;
+}
+
+/* ============================================
+   6. CAP STEMPEL NOTIFIKASI, POPOUT & TOMBOL
+   ============================================ */
+[class*="numberBadge_"] {
+    background-color: #FFE600 !important;
+    color: #0A0A09 !important;
+    font-family: 'Courier New', Consolas, monospace !important;
+    font-weight: 900 !important;
+    border: 2px solid #0A0A09 !important;
+    border-radius: 2px !important;
+    box-shadow: 2px 2px 0px #E51937 !important;
+    transform: rotate(-5deg) !important;
+}
+
+[class*="tooltip_"] {
+    background-color: #EDE4CF !important;
+    color: #0A0A09 !important;
+    border: 2.5px solid #0A0A09 !important;
+    border-radius: 2px !important;
+    box-shadow: 5px 5px 0px #E51937 !important;
+}
+
+#popover-portal [class*="layer_"],
+[class*="messagesPopoutWrap_"],
+[class*="recentMentionsPopout_"] {
+    background-color: #171614 !important;
+    color: #F5EFE0 !important;
+    border: 2.5px solid #EAE0C8 !important;
+    border-radius: 2px !important;
+    box-shadow: 5px 5px 0px #E51937 !important;
+}
+
+[class*="tooltip_"] *,
+[class*="tooltipBodyContainer_"] {
+    color: #0A0A09 !important;
+    font-family: 'Courier New', Consolas, monospace !important;
+    font-weight: 800 !important;
+}
+
+[data-mana-component="modal"],
+[role="dialog"][class*="root_"],
+[class*="standardSidebarView_"] {
+    background-color: #171614 !important;
+    border: 3px solid #EAE0C8 !important;
+    box-shadow: 8px 8px 0px #E51937 !important;
+}
+
+[class*="standardSidebarView_"] [class*="sidebarRegion_"],
+[class*="standardSidebarView_"] [class*="sidebarRegionScroller_"],
+[class*="standardSidebarView_"] [class*="contentRegion_"] {
+    background-color: transparent !important;
+}
+
+button[class*="button_"][class*="colorBrand_"],
+button[class*="button_"][class*="lookFilled_"] {
+    background-color: #E51937 !important;
+    border: 2px solid #0A0A09 !important;
+    border-radius: 2px !important;
+    box-shadow: 3px 3px 0px #FFE600 !important;
+    color: #FFFFFF !important;
+    font-family: 'Courier New', Consolas, monospace !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+}
+
+button[class*="button_"][class*="colorBrand_"]:hover,
+button[class*="button_"][class*="lookFilled_"]:hover {
+    background-color: #FFE600 !important;
+    color: #0A0A09 !important;
+    box-shadow: 3px 3px 0px #E51937 !important;
+    transform: translate(-1px, -1px) !important;
+}
+
+button[class*="button_"][class*="lookOutlined_"] {
+    background-color: #EDE4CF !important;
+    border: 2px solid #0A0A09 !important;
+    border-radius: 2px !important;
+    color: #0A0A09 !important;
+    font-family: 'Courier New', Consolas, monospace !important;
+    font-weight: 900 !important;
+}
+
+/* ============================================
+   7. SCROLLBAR XEROX HARD-EDGE
+   ============================================ */
+::-webkit-scrollbar {
+    width: 10px !important;
+    height: 10px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: #100F0D !important;
+    border-left: 1px dashed #3D3932 !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #E51937 !important;
+    border: 2px solid #0A0A09 !important;
+    border-radius: 0px !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #FFE600 !important;
+}

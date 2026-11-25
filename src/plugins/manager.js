@@ -236,39 +236,124 @@ class PluginManager {
     }
 
     /**
-     * Enable a plugin
+     * Enable a plugin (auto-loads if needed, deploys scripts, and persists config)
      * @param {string} name - Plugin name
-     * @returns {boolean}
+     * @param {Object} [options] - Options
+     * @param {boolean} [options.persistGlobal=true] - Persist into root config.json
+     * @returns {Promise<boolean>}
      */
-    enable(name) {
-        const plugin = this.plugins.get(name);
+    async enable(name, { persistGlobal = true } = {}) {
+        let plugin = this.plugins.get(name);
+        if (!plugin) {
+            const loaded = await this.load(name);
+            if (!loaded) return false;
+            plugin = this.plugins.get(name);
+        }
         if (!plugin) return false;
 
         plugin.enabled = true;
-
-        if (plugin.instance?.onEnable) {
-            plugin.instance.onEnable();
+        plugin.config = { ...(plugin.config || {}), enabled: true };
+        if (plugin.instance?.config && typeof plugin.instance.config === 'object') {
+            plugin.instance.config.enabled = true;
         }
 
+        const pluginConfigPath = path.join(plugin.path, 'config.json');
+        if (await fs.pathExists(pluginConfigPath)) {
+            try {
+                const diskCfg = await fs.readJson(pluginConfigPath);
+                await fs.writeJson(pluginConfigPath, { ...diskCfg, enabled: true }, { spaces: 2 });
+            } catch (_) {}
+        }
+
+        if (plugin.instance?.onEnable) {
+            await plugin.instance.onEnable();
+        } else if (plugin.instance?.onConfigChange) {
+            await plugin.instance.onConfigChange(plugin.config);
+        } else if (plugin.instance?.deployer?.deploy) {
+            await plugin.instance.deployer.deploy();
+        } else if (typeof plugin.instance?.deploy === 'function') {
+            await plugin.instance.deploy();
+        }
+
+        if (persistGlobal) {
+            const { loadConfig, saveConfig } = await import('../config.js');
+            const cfg = await loadConfig();
+            if (!cfg.plugins || typeof cfg.plugins !== 'object') cfg.plugins = { enabled: [], autoLoad: true };
+            if (!Array.isArray(cfg.plugins.enabled)) cfg.plugins.enabled = [];
+            if (!cfg.plugins.enabled.includes(name)) {
+                cfg.plugins.enabled.push(name);
+                await saveConfig(cfg);
+            }
+        }
+
+        eventBus.emit('plugin:enable', { name });
         logger.info(`Plugin enabled: ${name}`);
         return true;
     }
 
     /**
-     * Disable a plugin
+     * Disable a plugin (removes deployed scripts for instant hot-unload and persists config)
      * @param {string} name - Plugin name
-     * @returns {boolean}
+     * @param {Object} [options] - Options
+     * @param {boolean} [options.persistGlobal=true] - Persist into root config.json
+     * @returns {Promise<boolean>}
      */
-    disable(name) {
+    async disable(name, { persistGlobal = true } = {}) {
         const plugin = this.plugins.get(name);
-        if (!plugin) return false;
+        const pluginDir = plugin?.path || path.join(this.pluginsDir, name);
+        if (!await fs.pathExists(pluginDir)) return false;
 
-        plugin.enabled = false;
+        if (plugin) {
+            plugin.enabled = false;
+            plugin.config = { ...(plugin.config || {}), enabled: false };
+            if (plugin.instance?.config && typeof plugin.instance.config === 'object') {
+                plugin.instance.config.enabled = false;
+            }
 
-        if (plugin.instance?.onDisable) {
-            plugin.instance.onDisable();
+            if (plugin.instance?.onDisable) {
+                await plugin.instance.onDisable();
+            } else if (plugin.instance?.onConfigChange) {
+                await plugin.instance.onConfigChange(plugin.config);
+            } else if (plugin.instance?.deployer?.remove) {
+                await plugin.instance.deployer.remove();
+            } else if (typeof plugin.instance?.removeInjectScript === 'function') {
+                await plugin.instance.removeInjectScript();
+            } else if (typeof plugin.instance?.remove === 'function') {
+                await plugin.instance.remove();
+            }
         }
 
+        const pluginConfigPath = path.join(pluginDir, 'config.json');
+        if (await fs.pathExists(pluginConfigPath)) {
+            try {
+                const diskCfg = await fs.readJson(pluginConfigPath);
+                await fs.writeJson(pluginConfigPath, { ...diskCfg, enabled: false }, { spaces: 2 });
+            } catch (_) {}
+        }
+
+        // Ensure deployed renderer script is always removed from plugin-scripts/
+        try {
+            const { findDiscordResourcePath } = await import('./deploy-utils.js');
+            const resourcePath = await findDiscordResourcePath(this.api);
+            if (resourcePath) {
+                const targetScript = path.join(resourcePath, 'app', 'plugin-scripts', `${name}.js`);
+                if (await fs.pathExists(targetScript)) {
+                    await fs.remove(targetScript);
+                    logger.info(`Removed deployed script: ${targetScript}`);
+                }
+            }
+        } catch (_) {}
+
+        if (persistGlobal) {
+            const { loadConfig, saveConfig } = await import('../config.js');
+            const cfg = await loadConfig();
+            if (cfg.plugins?.enabled && Array.isArray(cfg.plugins.enabled)) {
+                cfg.plugins.enabled = cfg.plugins.enabled.filter((p) => p !== name);
+                await saveConfig(cfg);
+            }
+        }
+
+        eventBus.emit('plugin:disable', { name });
         logger.info(`Plugin disabled: ${name}`);
         return true;
     }
@@ -331,6 +416,77 @@ class PluginManager {
      */
     getAllPlugins() {
         return Array.from(this.plugins.keys()).map(name => this.getPlugin(name));
+    }
+
+    /**
+     * Get full catalog of all discovered plugins including metadata, README, and live state
+     * @returns {Promise<{discordPath: string|null, plugins: Array<Object>}>}
+     */
+    async getCatalog() {
+        const { loadConfig } = await import('../config.js');
+        const { findDiscordResourcePath } = await import('./deploy-utils.js');
+
+        const discovered = await this.discover();
+        const globalCfg = await loadConfig();
+        const enabledList = Array.isArray(globalCfg?.plugins?.enabled) ? globalCfg.plugins.enabled : [];
+        const discordPath = await findDiscordResourcePath(this.api);
+        const scriptsDir = discordPath ? path.join(discordPath, 'app', 'plugin-scripts') : null;
+
+        const catalog = [];
+        for (const name of discovered) {
+            const pluginDir = path.join(this.pluginsDir, name);
+            const manifestPath = path.join(pluginDir, 'manifest.json');
+            let manifest = { name };
+            try {
+                manifest = await fs.readJson(manifestPath);
+            } catch (_) {}
+
+            const perPluginCfgPath = path.join(pluginDir, 'config.json');
+            let pluginConfig = { ...(manifest.config || {}) };
+            if (await fs.pathExists(perPluginCfgPath)) {
+                try {
+                    const userCfg = await fs.readJson(perPluginCfgPath);
+                    pluginConfig = { ...pluginConfig, ...userCfg };
+                } catch (_) {}
+            }
+
+            let readme = '';
+            for (const readmeFile of ['README.md', 'readme.md']) {
+                const p = path.join(pluginDir, readmeFile);
+                if (await fs.pathExists(p)) {
+                    try {
+                        readme = await fs.readFile(p, 'utf8');
+                    } catch (_) {}
+                    break;
+                }
+            }
+
+            const hasInjectFile = await fs.pathExists(path.join(pluginDir, 'inject.js'));
+            const deployedScriptPath = scriptsDir ? path.join(scriptsDir, `${name}.js`) : null;
+            const deployed = deployedScriptPath ? await fs.pathExists(deployedScriptPath) : false;
+            const loaded = this.plugins.get(name);
+            const isEnabled = loaded ? !!loaded.enabled : (enabledList.includes(name) || deployed);
+
+            catalog.push({
+                name,
+                displayName: manifest.displayName || name.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+                version: manifest.version || '1.0.0',
+                author: manifest.author || 'Unknown',
+                description: manifest.description || '',
+                enabled: isEnabled,
+                loaded: !!loaded,
+                deployed,
+                hasInject: hasInjectFile || name === 'quick-send',
+                hotReloadable: hasInjectFile || name === 'quick-send',
+                hooks: Array.isArray(manifest.hooks) ? manifest.hooks : [],
+                tags: Array.isArray(manifest.tags) ? manifest.tags : [],
+                config: loaded?.config || pluginConfig,
+                readme
+            });
+        }
+
+        catalog.sort((a, b) => a.displayName.localeCompare(b.displayName));
+        return { discordPath, plugins: catalog };
     }
 
     /**

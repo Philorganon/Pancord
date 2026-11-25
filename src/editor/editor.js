@@ -58,9 +58,12 @@
             }
 
             // ─── WebSocket ───
-            const WS_URL = 'ws://localhost:8765';
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const WS_URL = wsProtocol + '//' + window.location.host;
             let ws = null;
             let reconnectTimer = null;
+            let liveSyncTimer = null;
+            let suppressModelChange = false;
             let reconnectDelay = 1500;
             const maxReconnectDelay = 15000;
 
@@ -100,6 +103,12 @@
                         const msg = JSON.parse(event.data);
                         if (msg.type === 'SAVED') {
                             showToast('CSS saved successfully!', 'success');
+                        } else if (msg.type === 'UPDATE' && typeof msg.css === 'string' && editor) {
+                            if (editor.getValue() !== msg.css) {
+                                suppressModelChange = true;
+                                editor.setValue(msg.css);
+                                suppressModelChange = false;
+                            }
                         } else if (msg.type === 'ERROR') {
                             showToast(msg.message || 'Save failed', 'error');
                         }
@@ -207,6 +216,25 @@
 
                         // Ctrl+S shortcut
                         editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, save);
+
+                        // Realtime live sync as you type (220ms debounce)
+                        editor.onDidChangeModelContent(() => {
+                            if (suppressModelChange) return;
+                            if (liveSyncTimer) clearTimeout(liveSyncTimer);
+                            liveSyncTimer = setTimeout(() => {
+                                liveSyncTimer = null;
+                                const css = editor.getValue();
+                                if (ws && ws.readyState === WebSocket.OPEN) {
+                                    ws.send(JSON.stringify({ type: 'SAVE', css, silent: true }));
+                                } else {
+                                    fetch('/api/css', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ css })
+                                    }).catch(() => {});
+                                }
+                            }, 220);
+                        });
 
                         // Autocomplete for Discord CSS variables
                         monaco.languages.registerCompletionItemProvider('css', {

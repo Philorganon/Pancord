@@ -29,6 +29,10 @@ export const themes = {
     'gruvbox': loadTheme('gruvbox'),
     'nsn': loadTheme('nsn'),
     'hutao': loadTheme('hutao'),
+    'oguri-cap': loadTheme('oguri-cap'),
+    'punk-zine': loadTheme('punk-zine'),
+    'obsidian-minimal': loadTheme('obsidian-minimal'),
+    'ryo-yamada': loadTheme('ryo-yamada'),
 };
 
 export function getThemeNames() {

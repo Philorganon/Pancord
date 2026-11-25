@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pancord — Plugin Control Center</title>
+  <style>
+    :root {
+      --bg-base: #0b0c0e;
+      --bg-surface: #111318;
+      --bg-card: #14171d;
+      --bg-card-hover: #181c24;
+      --bg-elevated: #1b1f29;
+      --bg-input: #0e1014;
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-default: rgba(255, 255, 255, 0.1);
+      --border-strong: rgba(255, 255, 255, 0.16);
+      --text-primary: #eceef2;
+      --text-secondary: #a2a8b4;
+      --text-muted: #6c727f;
+      --accent: #7289da;
+      --accent-soft: rgba(114, 137, 218, 0.14);
+      --success: #3ba55c;
+      --success-soft: rgba(59, 165, 92, 0.14);
+      --warning: #faa61a;
+      --warning-soft: rgba(250, 166, 26, 0.14);
+      --danger: #ed4245;
+      --danger-soft: rgba(237, 66, 69, 0.14);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 15px;
+      color-scheme: dark;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      background-image:
+        radial-gradient(ellipse at 20% 0%, rgba(114, 137, 218, 0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 100%, rgba(59, 165, 92, 0.03) 0%, transparent 50%);
+    }
+
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.18); }
+
+    /* Top Header */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(17, 19, 24, 0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .topbar-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, #272b38 0%, #171920 100%);
+      border: 1px solid var(--border-default);
+      display: grid;
+      place-items: center;
+      color: var(--text-primary);
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+
+    .brand-sub {
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link, .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 13px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .nav-link:hover, .btn-secondary:hover {
+      background: var(--bg-elevated);
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border: 1px solid var(--border-default);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+
+    .status-pill.online {
+      border-color: rgba(59, 165, 92, 0.35);
+      background: var(--success-soft);
+      color: #6fd38e;
+    }
+    .status-pill.online .status-dot {
+      background: var(--success);
+      box-shadow: 0 0 8px rgba(59, 165, 92, 0.55);
+    }
+
+    .status-pill.offline {
+      border-color: rgba(237, 66, 69, 0.35);
+      background: var(--danger-soft);
+      color: #f48789;
+    }
+    .status-pill.offline .status-dot {
+      background: var(--danger);
+    }
+
+    /* Main Container */
+    .main {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* Info Strip / Summary */
+    .summary-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .stat-value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-value.accent { color: #9eb0f5; }
+    .stat-value.green { color: #6fd38e; }
+
+    /* Offline Notice Banner */
+    .offline-banner {
+      display: none;
+      margin-bottom: 18px;
+      padding: 16px 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(250, 166, 26, 0.35);
+      background: rgba(250, 166, 26, 0.07);
+      gap: 14px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .offline-banner.visible { display: flex; }
+
+    .offline-text h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #ffd07a;
+      margin-bottom: 3px;
+    }
+
+    .offline-text p {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .offline-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .cmd-chip {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border-default);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+    }
+
+    .port-input {
+      width: 96px;
+      padding: 6px 9px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      background: var(--bg-input);
+      color: var(--text-primary);
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      outline: none;
+    }
+    .port-input:focus { border-color: var(--accent); }
+
+    /* Controls Toolbar */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1 1 280px;
+      max-width: 440px;
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 9px 12px 9px 36px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-input:focus {
+      border-color: var(--accent);
+      background: var(--bg-card);
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tabs {
+      display: inline-flex;
+      padding: 3px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      gap: 2px;
+    }
+
+    .tab-btn {
+      padding: 5px 12px;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .tab-btn:hover { color: var(--text-secondary); }
+    .tab-btn.active {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+    }
+
+    .sort-select {
+      padding: 7px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.79rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Plugin Grid */
+    .plugin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(335px, 1fr));
+      gap: 14px;
+    }
+
+    .plugin-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+    }
+
+    .plugin-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-default);
+      transform: translateY(-1px);
+    }
+
+    .plugin-card.is-enabled {
+      border-color: rgba(59, 165, 92, 0.28);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card-title-wrap {
+      min-width: 0;
+    }
+
+    .card-title {
+      font-size: 0.96rem;
+      font-weight: 650;
+      color: var(--text-primary);
+      line-height: 1.3;
+      word-break: break-word;
+    }
+
+    .card-slug {
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .version-chip {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+    }
+
+    .card-desc {
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-badges {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+    }
+
+    .badge.hot {
+      background: var(--accent-soft);
+      border-color: rgba(114, 137, 218, 0.25);
+      color: #a9b8f8;
+    }
+
+    .badge.live-on {
+      background: var(--success-soft);
+      border-color: rgba(59, 165, 92, 0.3);
+      color: #6fd38e;
+    }
+
+    .badge.hotkey {
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .author-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .btn-detail {
+      padding: 5px 11px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn-detail:hover {
+      background: var(--bg-elevated);
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+    }
+
+    /* Toggle Switch */
+    .switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      border-radius: 999px;
+      border: 1px solid var(--border-default);
+      background: #222630;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.18s ease, border-color 0.18s ease;
+      padding: 0;
+    }
+
+    .switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #b9bec9;
+      transition: transform 0.18s ease, background 0.18s ease;
+    }
+
+    .switch[aria-checked="true"] {
+      background: var(--success);
+      border-color: rgba(59, 165, 92, 0.7);
+    }
+
+    .switch[aria-checked="true"]::after {
+      transform: translateX(20px);
+      background: #ffffff;
+    }
+
+    .switch:disabled {
+      opacity: 0.5;
+      cursor: wait;
+    }
+
+    /* Empty / Error State */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 48px 20px;
+      background: var(--bg-surface);
+      border: 1px dashed var(--border-default);
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+    }
+
+    .empty-state h3 {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    /* Detail Drawer Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(5, 6, 8, 0.72);
+      backdrop-filter: blur(6px);
+      display: none;
+      justify-content: flex-end;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .drawer {
+      width: min(680px, 100vw);
+      height: 100%;
+      background: var(--bg-surface);
+      border-left: 1px solid var(--border-default);
+      display: flex;
+      flex-direction: column;
+      box-shadow: -16px 0 48px rgba(0, 0, 0, 0.55);
+    }
+
+    .drawer-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      background: var(--bg-card);
+    }
+
+    .drawer-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .drawer-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-top: 3px;
+    }
+
+    .drawer-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-close {
+      width: 30px;
+      height: 30px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+
+    .btn-close:hover {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+    }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 22px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .detail-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .detail-heading {
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+
+    .detail-desc-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .meta-table {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+    }
+
+    .meta-cell {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+
+    .meta-cell-key {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .meta-cell-val {
+      font-size: 0.83rem;
+      color: var(--text-primary);
+      font-weight: 600;
+      margin-top: 2px;
+      word-break: break-word;
+    }
+
+    /* Rendered README Markdown */
+    .markdown-body {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+      color: var(--text-primary);
+      font-weight: 650;
+      margin: 14px 0 8px;
+      line-height: 1.3;
+    }
+    .markdown-body h1:first-child, .markdown-body h2:first-child, .markdown-body h3:first-child {
+      margin-top: 0;
+    }
+    .markdown-body h1 { font-size: 1.08rem; }
+    .markdown-body h2 { font-size: 0.96rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 4px; }
+    .markdown-body h3 { font-size: 0.88rem; }
+    .markdown-body p { margin: 8px 0; }
+    .markdown-body ul, .markdown-body ol { margin: 8px 0 8px 20px; }
+    .markdown-body li { margin: 4px 0; }
+    .markdown-body code {
+      font-family: var(--font-mono);
+      font-size: 0.79rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: #d6deff;
+    }
+    .markdown-body pre {
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 11px 13px;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+    .markdown-body pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--text-primary);
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 4px 12px;
+      margin: 8px 0;
+      color: var(--text-muted);
+      background: rgba(114, 137, 218, 0.05);
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      font-size: 0.8rem;
+    }
+    .markdown-body th, .markdown-body td {
+      text-align: left;
+      padding: 7px 9px;
+      border: 1px solid var(--border-subtle);
+    }
+    .markdown-body th {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .config-pre {
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: #c8d0e0;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Toast */
+    .toast-stack {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast {
+      pointer-events: auto;
+      min-width: 260px;
+      max-width: 420px;
+      padding: 11px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    }
+
+    .toast.success { border-color: rgba(59, 165, 92, 0.45); }
+    .toast.error { border-color: rgba(237, 66, 69, 0.45); color: #ffb3b4; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">Pancord Plugins</div>
+          <div class="brand-sub">Hot ON/OFF Tanpa Restart</div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <a id="cssEditorLink" class="nav-link" href="/">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+          CSS Editor
+        </a>
+        <button id="refreshBtn" class="btn-secondary" type="button" title="Muat ulang daftar plugin">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+            <path d="M16 16h5v5"></path>
+          </svg>
+          Refresh
+        </button>
+        <div id="connectionPill" class="status-pill">
+          <span class="status-dot"></span>
+          <span id="connectionText">Menghubungkan...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="summary-bar" aria-label="Ringkasan Plugin">
+      <div class="stat-card">
+        <span class="stat-label">Total Plugin</span>
+        <span class="stat-value" id="statTotal">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Plugin Aktif (ON)</span>
+        <span class="stat-value green" id="statEnabled">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Nonaktif (OFF)</span>
+        <span class="stat-value" id="statDisabled">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Mode Hot-Reload</span>
+        <span class="stat-value accent" id="statHot">0</span>
+      </div>
+    </section>
+
+    <section id="offlineBanner" class="offline-banner" aria-live="polite">
+      <div class="offline-text">
+        <h3>Server Pancord belum terhubung</h3>
+        <p>Jalankan server editor agar toggle ON/OFF langsung diterapkan ke Discord tanpa restart.</p>
+      </div>
+      <div class="offline-actions">
+        <code class="cmd-chip">npm run editor</code>
+        <button id="copyCmdBtn" class="btn-secondary" type="button">Salin</button>
+        <input id="portInput" class="port-input" type="number" min="1" max="65535" value="8765" title="Port server Pancord" />
+        <button id="retryBtn" class="btn-secondary" type="button">Coba Hubungkan</button>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="Filter dan Pencarian">
+      <div class="search-box">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+        <input id="searchInput" class="search-input" type="search" placeholder="Cari nama plugin, deskripsi, author, atau fitur..." autocomplete="off" />
+      </div>
+
+      <div class="filter-group">
+        <div class="tabs" role="tablist" aria-label="Status Filter">
+          <button class="tab-btn active" type="button" data-filter="all">Semua</button>
+          <button class="tab-btn" type="button" data-filter="enabled">Aktif</button>
+          <button class="tab-btn" type="button" data-filter="disabled">Nonaktif</button>
+        </div>
+        <select id="sortSelect" class="sort-select" aria-label="Urutkan">
+          <option value="enabled-first">Aktif Dulu</option>
+          <option value="name">Nama (A - Z)</option>
+          <option value="hot">Hot-Reload Dulu</option>
+        </select>
+      </div>
+    </section>
+
+    <section id="pluginGrid" class="plugin-grid" aria-live="polite"></section>
+  </main>
+
+  <div id="detailModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+    <aside class="drawer">
+      <div class="drawer-header">
+        <div>
+          <h2 class="drawer-title" id="drawerTitle">Detail Plugin</h2>
+          <div class="drawer-subtitle" id="drawerSubtitle">-</div>
+        </div>
+        <div class="drawer-actions">
+          <button id="drawerSwitch" class="switch" type="button" role="switch" aria-checked="false" aria-label="Toggle plugin"></button>
+          <button id="drawerClose" class="btn-close" type="button" aria-label="Tutup">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18"></path>
+              <path d="m6 6 12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="drawer-body" id="drawerBody"></div>
+    </aside>
+  </div>
+
+  <div id="toastStack" class="toast-stack" aria-live="polite"></div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const state = {
+        plugins: [],
+        filter: 'all',
+        search: '',
+        sort: 'enabled-first',
+        selectedName: null,
+        pending: new Set(),
+        connected: false,
+        port: Number(localStorage.getItem('pancord_server_port')) || 8765
+      };
+
+      const isHttpOrigin = window.location.protocol === 'http:' || window.location.protocol === 'https:';
+      const el = {
+        cssEditorLink: document.getElementById('cssEditorLink'),
+        refreshBtn: document.getElementById('refreshBtn'),
+        connectionPill: document.getElementById('connectionPill'),
+        connectionText: document.getElementById('connectionText'),
+        statTotal: document.getElementById('statTotal'),
+        statEnabled: document.getElementById('statEnabled'),
+        statDisabled: document.getElementById('statDisabled'),
+        statHot: document.getElementById('statHot'),
+        offlineBanner: document.getElementById('offlineBanner'),
+        copyCmdBtn: document.getElementById('copyCmdBtn'),
+        portInput: document.getElementById('portInput'),
+        retryBtn: document.getElementById('retryBtn'),
+        searchInput: document.getElementById('searchInput'),
+        sortSelect: document.getElementById('sortSelect'),
+        pluginGrid: document.getElementById('pluginGrid'),
+        detailModal: document.getElementById('detailModal'),
+        drawerTitle: document.getElementById('drawerTitle'),
+        drawerSubtitle: document.getElementById('drawerSubtitle'),
+        drawerSwitch: document.getElementById('drawerSwitch'),
+        drawerClose: document.getElementById('drawerClose'),
+        drawerBody: document.getElementById('drawerBody'),
+        toastStack: document.getElementById('toastStack')
+      };
+
+      el.portInput.value = String(state.port);
+      if (!isHttpOrigin) {
+        el.cssEditorLink.href = `http://localhost:${state.port}/`;
+      }
+
+      function getApiBase() {
+        return isHttpOrigin ? '' : `http://localhost:${state.port}`;
+      }
+
+      function escapeHtml(text) {
+        return String(text == null ? '' : text)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function extractHotkeys(config) {
+        if (!config || typeof config !== 'object') return [];
+        const keys = [];
+        for (const [k, v] of Object.entries(config)) {
+          if (/hotkey/i.test(k) && typeof v === 'string' && v.trim()) {
+            keys.push(v.trim().toUpperCase());
+          }
+        }
+        return keys;
+      }
+
+      function sanitizeConfig(config) {
+        if (!config || typeof config !== 'object') return {};
+        const clean = {};
+        for (const [k, v] of Object.entries(config)) {
+          if (/token|secret|password|apikey/i.test(k) && typeof v === 'string' && v.length > 0) {
+            clean[k] = '********';
+          } else {
+            clean[k] = v;
+          }
+        }
+        return clean;
+      }
+
+      function formatInlineMarkdown(raw) {
+        let out = escapeHtml(raw);
+        out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
+        out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        out = out.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+        return out;
+      }
+
+      function renderMarkdown(md) {
+        if (!md || !md.trim()) {
+          return '<p>Tidak ada file README.md untuk plugin ini. Informasi ringkas tersedia di bagian Deskripsi.</p>';
+        }
+
+        const lines = md.replace(/\r\n/g, '\n').split('\n');
+        const html = [];
+        let inCode = false;
+        let codeLines = [];
+        let listType = null;
+        let tableRows = [];
+
+        const flushList = () => {
+          if (listType) {
+            html.push(`</${listType}>`);
+            listType = null;
+          }
+        };
+
+        const flushTable = () => {
+          if (tableRows.length === 0) return;
+          const rows = tableRows.filter((row) => !/^\s*\|?(\s*:?-+:?\s*\|)+\s*:?-+:?\s*\|?\s*$/.test(row));
+          if (rows.length > 0) {
+            html.push('<table>');
+            rows.forEach((row, idx) => {
+              const cells = row.replace(/^\|/, '').replace(/\|$/, '').split('|');
+              const tag = idx === 0 ? 'th' : 'td';
+              html.push('<tr>' + cells.map((c) => `<${tag}>${formatInlineMarkdown(c.trim())}</${tag}>`).join('') + '</tr>');
+            });
+            html.push('</table>');
+          }
+          tableRows = [];
+        };
+
+        for (const line of lines) {
+          if (line.trim().startsWith('```')) {
+            flushList();
+            flushTable();
+            if (inCode) {
+              html.push(`<pre><code>${escapeHtml(codeLines.join('\n'))}</code></pre>`);
+              codeLines = [];
+              inCode = false;
+            } else {
+              inCode = true;
+            }
+            continue;
+          }
+
+          if (inCode) {
+            codeLines.push(line);
+            continue;
+          }
+
+          if (/^\s*\|.*\|\s*$/.test(line)) {
+            flushList();
+            tableRows.push(line);
+            continue;
+          } else {
+            flushTable();
+          }
+
+          const trimmed = line.trim();
+          if (!trimmed) {
+            flushList();
+            continue;
+          }
+
+          const headingMatch = trimmed.match(/^(#{1,3})\s+(.+)$/);
+          if (headingMatch) {
+            flushList();
+            const lvl = headingMatch[1].length;
+            html.push(`<h${lvl}>${formatInlineMarkdown(headingMatch[2])}</h${lvl}>`);
+            continue;
+          }
+
+          if (trimmed.startsWith('>')) {
+            flushList();
+            html.push(`<blockquote>${formatInlineMarkdown(trimmed.replace(/^>\s*/, ''))}</blockquote>`);
+            continue;
+          }
+
+          const ulMatch = trimmed.match(/^[-*]\s+(.+)$/);
+          if (ulMatch) {
+            if (listType !== 'ul') {
+              flushList();
+              listType = 'ul';
+              html.push('<ul>');
+            }
+            html.push(`<li>${formatInlineMarkdown(ulMatch[1])}</li>`);
+            continue;
+          }
+
+          const olMatch = trimmed.match(/^\d+\.\s+(.+)$/);
+          if (olMatch) {
+            if (listType !== 'ol') {
+              flushList();
+              listType = 'ol';
+              html.push('<ol>');
+            }
+            html.push(`<li>${formatInlineMarkdown(olMatch[1])}</li>`);
+            continue;
+          }
+
+          flushList();
+          html.push(`<p>${formatInlineMarkdown(trimmed)}</p>`);
+        }
+
+        if (inCode && codeLines.length > 0) {
+          html.push(`<pre><code>${escapeHtml(codeLines.join('\n'))}</code></pre>`);
+        }
+        flushList();
+        flushTable();
+        return html.join('\n');
+      }
+
+      function showToast(message, type) {
+        const node = document.createElement('div');
+        node.className = `toast ${type || ''}`;
+        node.textContent = message;
+        el.toastStack.appendChild(node);
+        setTimeout(() => {
+          node.remove();
+        }, 3200);
+      }
+
+      function setConnection(online, text) {
+        state.connected = online;
+        el.connectionPill.className = `status-pill ${online ? 'online' : 'offline'}`;
+        el.connectionText.textContent = text;
+        el.offlineBanner.classList.toggle('visible', !online);
+      }
+
+      function updateStats() {
+        const total = state.plugins.length;
+        const enabled = state.plugins.filter((p) => p.enabled).length;
+        const hot = state.plugins.filter((p) => p.hotReloadable).length;
+        el.statTotal.textContent = String(total);
+        el.statEnabled.textContent = String(enabled);
+        el.statDisabled.textContent = String(total - enabled);
+        el.statHot.textContent = String(hot);
+      }
+
+      function getFilteredPlugins() {
+        const q = state.search.trim().toLowerCase();
+        const filtered = state.plugins.filter((p) => {
+          if (state.filter === 'enabled' && !p.enabled) return false;
+          if (state.filter === 'disabled' && p.enabled) return false;
+          if (!q) return true;
+          const hay = [
+            p.name,
+            p.displayName,
+            p.description,
+            p.author,
+            ...(p.tags || []),
+            p.readme || ''
+          ].join('\n').toLowerCase();
+          return hay.includes(q);
+        });
+
+        filtered.sort((a, b) => {
+          if (state.sort === 'enabled-first') {
+            if (a.enabled !== b.enabled) return a.enabled ? -1 : 1;
+          } else if (state.sort === 'hot') {
+            if (a.hotReloadable !== b.hotReloadable) return a.hotReloadable ? -1 : 1;
+          }
+          return a.displayName.localeCompare(b.displayName);
+        });
+
+        return filtered;
+      }
+
+      function renderGrid() {
+        updateStats();
+        const list = getFilteredPlugins();
+
+        if (!state.connected && state.plugins.length === 0) {
+          el.pluginGrid.innerHTML = `
+            <div class="empty-state">
+              <h3>Tidak dapat memuat plugin karena server belum aktif</h3>
+              <p>Jalankan <code>npm run editor</code> di folder Pancord lalu klik Coba Hubungkan.</p>
+            </div>
+          `;
+          return;
+        }
+
+        if (list.length === 0) {
+          el.pluginGrid.innerHTML = `
+            <div class="empty-state">
+              <h3>Tidak ada plugin yang cocok</h3>
+              <p>Ubah kata kunci pencarian atau filter status.</p>
+            </div>
+          `;
+          return;
+        }
+
+        el.pluginGrid.innerHTML = list.map((p) => {
+          const isBusy = state.pending.has(p.name);
+          const hotkeys = extractHotkeys(p.config);
+          const modeLabel = p.hotReloadable ? 'Hot ON/OFF' : 'Host Node';
+          return `
+            <article class="plugin-card ${p.enabled ? 'is-enabled' : ''}" data-plugin="${escapeHtml(p.name)}">
+              <div>
+                <div class="card-top">
+                  <div class="card-title-wrap">
+                    <div class="card-title">${escapeHtml(p.displayName)}</div>
+                    <div class="card-slug">
+                      <span>${escapeHtml(p.name)}</span>
+                      <span class="version-chip">v${escapeHtml(p.version)}</span>
+                    </div>
+                  </div>
+                  <button
+                    class="switch"
+                    type="button"
+                    role="switch"
+                    aria-checked="${p.enabled ? 'true' : 'false'}"
+                    aria-label="Aktifkan atau matikan ${escapeHtml(p.displayName)}"
+                    data-action="toggle"
+                    data-name="${escapeHtml(p.name)}"
+                    ${isBusy ? 'disabled' : ''}
+                  ></button>
+                </div>
+                <p class="card-desc" style="margin-top: 10px;">${escapeHtml(p.description || 'Tidak ada deskripsi singkat.')}</p>
+              </div>
+
+              <div>
+                <div class="card-badges" style="margin-bottom: 10px;">
+                  <span class="badge ${p.enabled ? 'live-on' : ''}">${p.enabled ? 'Aktif' : 'Nonaktif'}</span>
+                  <span class="badge ${p.hotReloadable ? 'hot' : ''}">${modeLabel}</span>
+                  ${hotkeys.map((hk) => `<span class="badge hotkey">${escapeHtml(hk)}</span>`).join('')}
+                </div>
+                <div class="card-footer">
+                  <span class="author-label">Oleh ${escapeHtml(p.author || 'Pancord')}</span>
+                  <button class="btn-detail" type="button" data-action="detail" data-name="${escapeHtml(p.name)}">
+                    Baca Detail
+                  </button>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join('');
+      }
+
+      function renderDrawer() {
+        const plugin = state.plugins.find((p) => p.name === state.selectedName);
+        if (!plugin) {
+          el.detailModal.classList.remove('open');
+          return;
+        }
+
+        const isBusy = state.pending.has(plugin.name);
+        const hotkeys = extractHotkeys(plugin.config);
+        const hooksText = plugin.hooks && plugin.hooks.length ? plugin.hooks.join(', ') : '-';
+
+        el.drawerTitle.textContent = plugin.displayName;
+        el.drawerSubtitle.textContent = `${plugin.name} · v${plugin.version}`;
+        el.drawerSwitch.setAttribute('aria-checked', plugin.enabled ? 'true' : 'false');
+        el.drawerSwitch.disabled = isBusy;
+
+        el.drawerBody.innerHTML = `
+          <div class="detail-section">
+            <div class="detail-heading">Deskripsi</div>
+            <div class="detail-desc-box">${escapeHtml(plugin.description || 'Tidak ada deskripsi.')}</div>
+          </div>
+
+          <div class="detail-section">
+            <div class="detail-heading">Metadata</div>
+            <div class="meta-table">
+              <div class="meta-cell">
+                <div class="meta-cell-key">Status Saat Ini</div>
+                <div class="meta-cell-val">${plugin.enabled ? 'Aktif (ON)' : 'Nonaktif (OFF)'}</div>
+              </div>
+              <div class="meta-cell">
+                <div class="meta-cell-key">Mode Eksekusi</div>
+                <div class="meta-cell-val">${plugin.hotReloadable ? 'Renderer Hot ON/OFF (Tanpa Restart)' : 'Node Host Background'}</div>
+              </div>
+              <div class="meta-cell">
+                <div class="meta-cell-key">Author</div>
+                <div class="meta-cell-val">${escapeHtml(plugin.author || 'Pancord')}</div>
+              </div>
+              <div class="meta-cell">
+                <div class="meta-cell-key">Hotkey</div>
+                <div class="meta-cell-val">${hotkeys.length ? escapeHtml(hotkeys.join(' / ')) : '-'}</div>
+              </div>
+              <div class="meta-cell" style="grid-column: 1 / -1;">
+                <div class="meta-cell-key">Lifecycle Hooks</div>
+                <div class="meta-cell-val" style="font-family: var(--font-mono); font-size: 0.78rem;">${escapeHtml(hooksText)}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <div class="detail-heading">Dokumentasi (README)</div>
+            <div class="markdown-body">${renderMarkdown(plugin.readme)}</div>
+          </div>
+
+          <div class="detail-section">
+            <div class="detail-heading">Konfigurasi Saat Ini</div>
+            <pre class="config-pre">${escapeHtml(JSON.stringify(sanitizeConfig(plugin.config), null, 2))}</pre>
+          </div>
+        `;
+
+        el.detailModal.classList.add('open');
+      }
+
+      async function fetchPlugins(silent) {
+        try {
+          const res = await fetch(`${getApiBase()}/api/plugins`, { cache: 'no-store' });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          state.plugins = Array.isArray(data.plugins) ? data.plugins : [];
+          setConnection(true, `Terhubung (${data.enabledCount}/${data.total} aktif)`);
+          renderGrid();
+          if (state.selectedName) renderDrawer();
+        } catch (err) {
+          setConnection(false, `Offline (port ${state.port})`);
+          if (!silent) {
+            showToast('Server Pancord belum aktif di port ' + state.port, 'error');
+          }
+          renderGrid();
+        }
+      }
+
+      async function togglePlugin(name) {
+        const plugin = state.plugins.find((p) => p.name === name);
+        if (!plugin || state.pending.has(name)) return;
+
+        const nextEnabled = !plugin.enabled;
+        state.pending.add(name);
+        renderGrid();
+        if (state.selectedName === name) renderDrawer();
+
+        try {
+          const res = await fetch(`${getApiBase()}/api/plugins/${encodeURIComponent(name)}/toggle`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ enabled: nextEnabled })
+          });
+          const data = await res.json();
+          if (!res.ok || !data.ok) {
+            throw new Error(data.error || `HTTP ${res.status}`);
+          }
+
+          if (data.plugin) {
+            const idx = state.plugins.findIndex((p) => p.name === name);
+            if (idx !== -1) state.plugins[idx] = data.plugin;
+          } else {
+            plugin.enabled = nextEnabled;
+          }
+
+          const stateLabel = nextEnabled ? 'diaktifkan' : 'dimatikan';
+          const hint = nextEnabled
+            ? `${plugin.displayName} ${stateLabel} (langsung aktif di Discord tanpa restart)`
+            : `${plugin.displayName} ${stateLabel} (langsung dibersihkan tanpa restart)`;
+          showToast(hint, 'success');
+          setConnection(true, `Terhubung (${state.plugins.filter((p) => p.enabled).length}/${state.plugins.length} aktif)`);
+        } catch (err) {
+          showToast(`Gagal mengubah ${plugin.displayName}: ${err.message}`, 'error');
+        } finally {
+          state.pending.delete(name);
+          renderGrid();
+          if (state.selectedName === name) renderDrawer();
+        }
+      }
+
+      // Event bindings
+      el.pluginGrid.addEventListener('click', (e) => {
+        const actionBtn = e.target.closest('[data-action]');
+        if (!actionBtn) return;
+        const action = actionBtn.getAttribute('data-action');
+        const name = actionBtn.getAttribute('data-name');
+        if (!name) return;
+
+        if (action === 'toggle') {
+          togglePlugin(name);
+        } else if (action === 'detail') {
+          state.selectedName = name;
+          renderDrawer();
+        }
+      });
+
+      el.drawerSwitch.addEventListener('click', () => {
+        if (state.selectedName) togglePlugin(state.selectedName);
+      });
+
+      el.drawerClose.addEventListener('click', () => {
+        state.selectedName = null;
+        el.detailModal.classList.remove('open');
+      });
+
+      el.detailModal.addEventListener('click', (e) => {
+        if (e.target === el.detailModal) {
+          state.selectedName = null;
+          el.detailModal.classList.remove('open');
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && state.selectedName) {
+          state.selectedName = null;
+          el.detailModal.classList.remove('open');
+        }
+      });
+
+      el.searchInput.addEventListener('input', (e) => {
+        state.search = e.target.value || '';
+        renderGrid();
+      });
+
+      document.querySelectorAll('.tab-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.filter = btn.getAttribute('data-filter') || 'all';
+          renderGrid();
+        });
+      });
+
+      el.sortSelect.addEventListener('change', (e) => {
+        state.sort = e.target.value;
+        renderGrid();
+      });
+
+      el.refreshBtn.addEventListener('click', () => fetchPlugins(false));
+      el.retryBtn.addEventListener('click', () => {
+        const parsed = Number(el.portInput.value);
+        if (parsed > 0 && parsed <= 65535) {
+          state.port = parsed;
+          localStorage.setItem('pancord_server_port', String(parsed));
+          if (!isHttpOrigin) el.cssEditorLink.href = `http://localhost:${parsed}/`;
+        }
+        fetchPlugins(false);
+      });
+
+      el.copyCmdBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText('npm run editor');
+          showToast('Perintah disalin: npm run editor', 'success');
+        } catch (_) {
+          showToast('Jalankan manual: npm run editor', 'success');
+        }
+      });
+
+      window.addEventListener('focus', () => fetchPlugins(true));
+
+      fetchPlugins(true);
+    })();
+  </script>
+</body>
+</html>
+
